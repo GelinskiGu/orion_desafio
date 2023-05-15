@@ -1,6 +1,10 @@
 from flask import Flask, render_template
+from flask_sqlalchemy import SQLAlchemy
 
+db = SQLAlchemy()
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:8rPTT7k#gT@localhost/orion_desafio.db'  # noqa: E501
+db.init_app(app)
 
 
 @app.route("/")
