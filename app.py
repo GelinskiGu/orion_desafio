@@ -1,6 +1,7 @@
 from flask import Flask, render_template, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager  # noqa: F401
+from sqlalchemy import LargeBinary
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user, UserMixin  # noqa: F401, E501
 from flask_bcrypt import Bcrypt
 from flask_migrate import Migrate
 from wtforms import StringField, PasswordField, SubmitField
@@ -15,19 +16,30 @@ bcrypt = Bcrypt(app)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
 
-class User(db.Model):
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+
+class User(UserMixin, db.Model):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), nullable=False, unique=True)
-    password = db.Column(db.String(), nullable=False)
+    password = db.Column(LargeBinary, nullable=False)
     name = db.Column(db.String(255), nullable=False)
 
     def __init__(self, username, password, name):
         self.username = username
         self.password = password
         self.name = name
+
+# Formulário de cadastro
 
 
 class RegisterForm(FlaskForm):
@@ -52,11 +64,31 @@ class RegisterForm(FlaskForm):
                 'Nome de usuário já existe. Favor escolher um nome diferente.')
 
     def validate_repeat_password(self, repeat_password):
-        print(repeat_password.data)
-        print(self.password.data)
         if repeat_password.data != self.password.data:
-            print("entrou aki")
             raise ValidationError('As senhas não conferem.')
+
+# Formulário de login
+
+
+class LoginForm(FlaskForm):
+    username = StringField(validators=[InputRequired(), Length(
+        min=5, max=20)], render_kw={"placeholder": "Nome de usuário"})
+    password = PasswordField(validators=[InputRequired(), Length(
+        min=8, max=20)], render_kw={"placeholder": "Senha"})
+    submit = SubmitField('Login')
+
+    def validate_username(self, username):
+        user = User.query.filter_by(username=username.data).first()
+        if not user:
+            raise ValidationError('Usuário não existe.')
+        else:
+            return True
+
+    def validate_password(self, password):
+        user = User.query.filter_by(username=self.username.data).first()
+        print(bcrypt.generate_password_hash(password.data))
+        if user and not bcrypt.check_password_hash(user.password, password.data):  # noqa: E501
+            raise ValidationError('Senha incorreta.')
 
 
 @app.route("/")
@@ -71,13 +103,27 @@ def register():
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data)
         new_user = User(username=form.username.data,
-                        password=hashed_password, name=form.name.data)
+                        password=hashed_password, name=form.name.data)  # noqa: E501
         print("Usuário criado.")
         db.session.add(new_user)
         db.session.commit()
-        return redirect(url_for('base.html'))
+        return redirect(url_for('login'))
 
     return render_template("register.html", form=form)
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=form.username.data).first()
+        if user:
+            if bcrypt.check_password_hash(user.password, form.password.data):
+                login_user(user)
+                print("Usuário logado")
+                return "Usuário logado."
+
+    return render_template("login.html", form=form)
 
 
 """

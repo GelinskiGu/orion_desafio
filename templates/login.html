@@ -4,19 +4,20 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Login</title>
 </head>
 <body>
-    <h1>Cadastro de Usuário: </h1>
+    <h1>Login de Usuário: </h1>
     
     <form method="POST" action="">
         {{ form.hidden_tag() }}
-        {{ form.name }}
         {{ form.username }}
+        {% if form.username.errors %}
+            {{ form.username.errors[0] }}
+        {% endif %}
         {{ form.password }}
-        {{ form.repeat_password}}
-        {% if form.repeat_password.errors %}
-            {{ form.repeat_password.errors[0] }}
+        {% if form.password.errors %}
+            {{ form.password.errors[0] }}
         {% endif %}
         {{ form.submit }}
     </form>
