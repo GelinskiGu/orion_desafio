@@ -16,7 +16,7 @@
         {{ form.password }}
         {{ form.repeat_password}}
         {% if form.repeat_password.errors %}
-            {{ form.repeat_password.errors[0] }}
+            {{ form.repeat_password.errors[0](class="text-danger") }}
         {% endif %}
         {{ form.submit }}
     </form>
