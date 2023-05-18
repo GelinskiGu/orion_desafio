@@ -12,9 +12,10 @@
     <h1>Login de Usuário: </h1>
     
     <form method="POST" action="">
-        <div class="form-group">
             {{ form.hidden_tag() }}
+            <div class="form-group">
             {{ form.username(class="form-control") }}
+            </div>
             {% if form.username.errors %}
                 <span class="text-danger ">{{ form.username.errors[0] }}</span>
             {% endif %}
@@ -23,7 +24,6 @@
                 {{ form.password.errors[0] }}
             {% endif %}
              <button type="submit" class="btn btn-primary">Login</button>
-        </div>
     </form>
 </body>
 </html>
