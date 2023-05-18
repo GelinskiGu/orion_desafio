@@ -92,7 +92,7 @@ class LoginForm(FlaskForm):
 
 
 @app.route("/")
-def hello_world():
+def home():
     return render_template("base.html")
 
 
@@ -121,7 +121,7 @@ def login():
             if bcrypt.check_password_hash(user.password, form.password.data):
                 login_user(user)
                 print("Usuário logado")
-                return "Usuário logado."
+                return redirect(url_for('home'))
 
     return render_template("login.html", form=form)
 
