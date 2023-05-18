@@ -3,6 +3,11 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+migrations/
+.migrations/
+.migrations
+migrations
+
 # C extensions
 *.so
 
@@ -154,3 +159,4 @@ cython_debug/
 .vscode/
 .vscode
 vscode/
+
