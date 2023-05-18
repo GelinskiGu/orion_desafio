@@ -154,8 +154,3 @@ cython_debug/
 .vscode/
 .vscode
 vscode/
-
-.migrations/
-migrations/
-
-
