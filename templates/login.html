@@ -16,7 +16,8 @@
             {{ form.hidden_tag() }}
             {{ form.username(class="form-control") }}
             {% if form.username.errors %}
-                {{ form.username.errors[0] }}
+            <span></span>
+                {{ form.username.errors[0]}}
             {% endif %}
             {{ form.password }}
             {% if form.password.errors %}
