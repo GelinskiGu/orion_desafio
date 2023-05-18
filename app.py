@@ -10,7 +10,7 @@ from flask_wtf import FlaskForm
 
 # Configuracao banco de dados
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:8rPTT7k#gT@localhost/orion_desafio.db'  # noqa: E501
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:8rPTT7k#gT@localhost/orion_desafio'  # noqa: E501
 app.config['SECRET_KEY'] = 'qTUL^P3cQ%'
 bcrypt = Bcrypt(app)
 db = SQLAlchemy(app)
