@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask, render_template, redirect, url_for, flash
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user, UserMixin  # noqa: F401, E501
 from flask_bcrypt import Bcrypt
 from flask_migrate import Migrate
@@ -109,6 +109,18 @@ def login():
                 return redirect(url_for('home'))
 
     return render_template("login.html", form=form)
+
+
+@app.route('/new_recipe', methods=['GET', 'POST'])
+def register_new_recipe():
+    if current_user.is_authenticated:
+        # Usuário está logado
+        pass
+    else:
+        flash("Você precisa estar logado para acessar essa página.", "error")
+        return redirect(url_for('login'))
+
+    return render_template("new_recipe.html")
 
 
 """
