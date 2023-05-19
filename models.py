@@ -5,6 +5,7 @@ from flask_uploads import UploadSet, IMAGES
 from datetime import datetime
 
 db = SQLAlchemy()
+photos = UploadSet('photos', IMAGES)
 
 
 class User(UserMixin, db.Model):
@@ -45,3 +46,11 @@ class Recipe(db.Model):
     created_at = db.Column(db.DateTime, nullable=False)
     image_filename = db.Column(db.String, nullable=True)
     image_path = db.Column(db.String, nullable=True)
+
+    def save_image(self, image):
+        now = datetime.now()
+        folder = f"assets/recipes_images/{now.year}/{now.strftime('%m')}"
+        filename = photos.save(image, folder=folder)
+        self.image_filename = filename
+        self.image_path = photos.path(filename)
+        db.session.commit()
