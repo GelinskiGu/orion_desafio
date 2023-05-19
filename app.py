@@ -2,17 +2,17 @@ from flask import Flask, render_template, redirect, url_for, flash
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user, UserMixin  # noqa: F401, E501
 from flask_bcrypt import Bcrypt
 from flask_migrate import Migrate
-from wtforms import StringField, PasswordField, SubmitField
+from wtforms import StringField, PasswordField, SubmitField, TextAreaField, FileField, SelectField  # noqa: F401, E501
 from wtforms.validators import InputRequired, Length, ValidationError, EqualTo  # noqa: F401, E501
 from flask_wtf import FlaskForm
-from models import db, User
+from models import db, User, Category  # noqa: F401, E501
+
 
 # Configuracao banco de dados
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:8rPTT7k#gT@localhost/orion'  # noqa: E501
 app.config['SECRET_KEY'] = 'qTUL^P3cQ%'
 bcrypt = Bcrypt(app)
-
 db.init_app(app)
 migrate = Migrate(app, db)
 
@@ -76,6 +76,18 @@ class LoginForm(FlaskForm):
             raise ValidationError('Senha incorreta.')
 
 
+class NewRecipeForm(FlaskForm):
+    title = TextAreaField(validators=[InputRequired(), Length(max=255)],
+                          render_kw={"placeholder": "Título de sua receita"})
+    category = SelectField('Categoria', coerce=int)
+    description = TextAreaField(validators=[InputRequired()],
+                                render_kw={"placeholder": "Descrição de sua receita"})  # noqa: E501
+    ingredients = TextAreaField(validators=[InputRequired()],
+                                render_kw={"placeholder": "Ingredientes de sua receita"})  # noqa: E501
+    preparation_steps = TextAreaField(validators=[InputRequired()],
+                                      render_kw={"placeholder": "Qual o passo-a-passo de sua receita?"})  # noqa: E501
+
+
 @app.route("/")
 def home():
     return render_template("base.html")
@@ -117,6 +129,7 @@ def register_new_recipe():
         # Usuário está logado
         pass
     else:
+        # Usuário não logado
         flash("Você precisa estar logado para acessar essa página.", "error")
         return redirect(url_for('login'))
 
