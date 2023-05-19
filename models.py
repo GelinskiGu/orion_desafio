@@ -1,6 +1,8 @@
 from sqlalchemy import LargeBinary
 from flask_login import UserMixin
 from flask_sqlalchemy import SQLAlchemy
+from flask_uploads import UploadSet, IMAGES
+from datetime import datetime
 
 db = SQLAlchemy()
 
@@ -41,3 +43,5 @@ class Recipe(db.Model):
     ingredients = db.Column(db.String, nullable=True)
     preparation_steps = db.Column(db.String, nullable=True)
     created_at = db.Column(db.DateTime, nullable=False)
+    image_filename = db.Column(db.String, nullable=True)
+    image_path = db.Column(db.String, nullable=True)
