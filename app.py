@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, flash
+from flask import Flask, render_template, redirect, url_for, flash, request  # noqa: F401, E501
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user, UserMixin  # noqa: F401, E501
 from flask_bcrypt import Bcrypt
 from flask_migrate import Migrate
@@ -8,15 +8,20 @@ from flask_wtf import FlaskForm
 from sqlalchemy import create_engine, LargeBinary, Integer, String, ForeignKey, DateTime, func, Column  # noqa: F401, E501
 from sqlalchemy.orm import sessionmaker
 from flask_sqlalchemy import SQLAlchemy
-from flask_uploads import UploadSet, IMAGES
-from datetime import datetime
+from flask_uploads import UploadSet, configure_uploads, IMAGES, patch_request_class  # noqa: F401, E501
+from datetime import datetime  # noqa: F401, E501
+import os
 
+
+basedir = os.path.abspath(os.path.dirname(__file__))
+path = './assets/recipes_images'
 
 # Configuracao banco de dados
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:8rPTT7k#gT@localhost/orion'  # noqa: E501
 app.config['SECRET_KEY'] = 'qTUL^P3cQ%'
-
+app.config['UPLOADED_PHOTOS_DEST'] = os.path.join(
+    basedir, path)
 
 bcrypt = Bcrypt(app)
 
@@ -35,6 +40,8 @@ login_manager.login_view = 'login'
 
 
 photos = UploadSet('photos', IMAGES)
+configure_uploads(app, photos)
+patch_request_class(app)  # set maximum file size, default is 16MB
 
 
 class User(UserMixin, db.Model):
@@ -76,6 +83,8 @@ class Recipe(db.Model):
     image_filename = db.Column(String, nullable=True)
     image_path = db.Column(String, nullable=True)
 
+
+"""
     def save_image(self, image):
         print("Imagem sendo salva")
         now = datetime.now()
@@ -83,7 +92,8 @@ class Recipe(db.Model):
         filename = photos.save(image, folder=folder)
         self.image_filename = filename
         self.image_path = photos.path(filename)
-        db.session.commit()
+        session.commit()
+"""
 
 
 @login_manager.user_loader
@@ -219,14 +229,21 @@ def register_new_recipe():
               form.image_filename.data)
         if form.validate_on_submit():
             print("Validado.")
+            now = datetime.now()
+            path_image = f"{now.year}/{now.strftime('%m')}"
+            filename = photos.save(form.image_filename.data, folder=path_image)
+            file_url = photos.url(filename)
+            print(form.image_filename.data.filename)
             recipe = Recipe(author=current_user.id,
                             category_id=form.category.data,
                             title=form.title.data,
                             description=form.description.data,
                             ingredients=form.ingredients.data,
                             preparation_steps=form.preparation_steps.data,
-                            image_filename=form.image_filename.data
+                            image_filename=form.image_filename.data.filename,
+                            image_path=file_url
                             )  # noqa: E501
+
             session.add(recipe)
             session.commit()
             flash("Receita cadastrada com sucesso!", "message")
