@@ -8,9 +8,10 @@ from flask_wtf import FlaskForm
 from sqlalchemy import create_engine, LargeBinary, Integer, String, ForeignKey, DateTime, func, Column  # noqa: F401, E501
 from sqlalchemy.orm import sessionmaker
 from flask_sqlalchemy import SQLAlchemy
-from flask_uploads import UploadSet, configure_uploads, IMAGES, patch_request_class  # noqa: F401, E501
+from flask_uploads import UploadSet, configure_uploads, IMAGES, patch_request_class, UploadNotAllowed  # noqa: F401, E501
 from datetime import datetime  # noqa: F401, E501
 import os
+from sqlalchemy.exc import SQLAlchemyError
 
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -231,8 +232,13 @@ def register_new_recipe():
             print("Validado.")
             now = datetime.now()
             path_image = f"{now.year}/{now.strftime('%m')}"
-            filename = photos.save(form.image_filename.data, folder=path_image)
-            file_url = photos.url(filename)
+            try:
+                filename = photos.save(
+                    form.image_filename.data, folder=path_image)
+                file_url = photos.url(filename)
+            except UploadNotAllowed:
+                flash("Ocorreu um erro para o salvamento da imagem.", "error")
+                return redirect(url_for("register_new_recipe"))
             print(form.image_filename.data.filename)
             recipe = Recipe(author=current_user.id,
                             category_id=form.category.data,
@@ -243,11 +249,15 @@ def register_new_recipe():
                             image_filename=form.image_filename.data.filename,
                             image_path=file_url
                             )  # noqa: E501
-
-            session.add(recipe)
-            session.commit()
-            flash("Receita cadastrada com sucesso!", "message")
-            return redirect(url_for("home"))
+            try:
+                session.add(recipe)
+                session.commit()
+                flash("Receita cadastrada com sucesso!", "message")
+                return redirect(url_for("home"))
+            except SQLAlchemyError:
+                flash("Ocorreu um erro para cadastrar receita.", "error")
+                session.rollback()
+                return redirect(url_for("register_new_recipe"))
 
     else:
         # Usuário não logado
