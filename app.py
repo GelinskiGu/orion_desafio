@@ -5,15 +5,28 @@ from flask_migrate import Migrate
 from wtforms import StringField, PasswordField, SubmitField, TextAreaField, FileField, SelectField  # noqa: F401, E501
 from wtforms.validators import InputRequired, Length, ValidationError, EqualTo  # noqa: F401, E501
 from flask_wtf import FlaskForm
-from models import db, User, Category  # noqa: F401, E501
+from sqlalchemy import create_engine, LargeBinary, Integer, String, ForeignKey, DateTime, func, Column  # noqa: F401, E501
+from sqlalchemy.orm import sessionmaker
+from flask_sqlalchemy import SQLAlchemy
+from flask_uploads import UploadSet, IMAGES
+from datetime import datetime
 
 
 # Configuracao banco de dados
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:8rPTT7k#gT@localhost/orion'  # noqa: E501
 app.config['SECRET_KEY'] = 'qTUL^P3cQ%'
+
+
 bcrypt = Bcrypt(app)
-db.init_app(app)
+
+engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
+
+Session = sessionmaker(bind=engine)
+session = Session()
+
+db = SQLAlchemy(app, session_options={"autocommit": False})  # noqa: F811
+
 migrate = Migrate(app, db)
 
 login_manager = LoginManager()
@@ -21,9 +34,61 @@ login_manager.init_app(app)
 login_manager.login_view = 'login'
 
 
+photos = UploadSet('photos', IMAGES)
+
+
+class User(UserMixin, db.Model):
+    __tablename__ = 'users'
+
+    id = Column(Integer, primary_key=True)
+    username = Column(String(20), nullable=False, unique=True)
+    password = Column(LargeBinary, nullable=False)
+    name = Column(String(255), nullable=False)
+
+    def __init__(self, username, password, name):
+        self.username = username
+        self.password = password
+        self.name = name
+
+
+class Category(db.Model):
+    __tablename__ = 'categories'
+
+    id = db.Column(Integer, primary_key=True)
+    name = db.Column(String(64), nullable=False, unique=True)
+
+    def __init__(self, name):
+        self.name = name
+
+
+class Recipe(db.Model):
+    __tablename__ = 'recipes'
+
+    id = db.Column(Integer, primary_key=True)
+    author = db.Column(Integer, ForeignKey('users.id'))
+    category_id = db.Column(Integer, ForeignKey('categories.id'))
+    category = db.relationship("Category")
+    title = db.Column(String(255), nullable=False)
+    description = db.Column(String, nullable=True)
+    ingredients = db.Column(String, nullable=True)
+    preparation_steps = db.Column(String, nullable=True)
+    created_at = db.Column(DateTime, nullable=False, default=func.now())
+    image_filename = db.Column(String, nullable=True)
+    image_path = db.Column(String, nullable=True)
+
+    def save_image(self, image):
+        print("Imagem sendo salva")
+        now = datetime.now()
+        folder = f"assets/recipes_images/{now.year}/{now.strftime('%m')}"
+        filename = photos.save(image, folder=folder)
+        self.image_filename = filename
+        self.image_path = photos.path(filename)
+        db.session.commit()
+
+
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    return session.get(User, user_id)
 
 
 # Formulário de cadastro
@@ -86,6 +151,21 @@ class NewRecipeForm(FlaskForm):
                                 render_kw={"placeholder": "Ingredientes de sua receita"})  # noqa: E501
     preparation_steps = TextAreaField(validators=[InputRequired()],
                                       render_kw={"placeholder": "Qual o passo-a-passo de sua receita?"})  # noqa: E501
+    image_filename = FileField(description="Coloque sua imagem da receita")
+    submit = SubmitField('Cadastrar')
+
+
+"""
+categories = [
+    Category(name='Café'),
+    Category(name='Salgados'),
+    Category(name='Doces'),
+    Category(name='Bolos'),
+    Category(name='Tortas')
+]
+session.add_all(categories)
+session.commit()
+"""
 
 
 @app.route("/")
@@ -102,8 +182,8 @@ def register():
         new_user = User(username=form.username.data,
                         password=hashed_password, name=form.name.data)  # noqa: E501
         print("Usuário criado.")
-        db.session.add(new_user)
-        db.session.commit()
+        session.add(new_user)
+        session.commit()
         return redirect(url_for('login'))
 
     return render_template("register.html", form=form)
@@ -125,15 +205,39 @@ def login():
 
 @app.route('/new_recipe', methods=['GET', 'POST'])
 def register_new_recipe():
+    form = NewRecipeForm()
+
     if current_user.is_authenticated:
         # Usuário está logado
-        pass
+        categories = session.query(Category).order_by(
+            Category.name.asc()).all()
+        form.category.choices = [(category.id, category.name)
+                                 for category in categories]
+        print(form.category.choices)
+        print(form.title.data, form.category.data, form.description.data,
+              form.ingredients.data, form.preparation_steps.data,
+              form.image_filename.data)
+        if form.validate_on_submit():
+            print("Validado.")
+            recipe = Recipe(author=current_user.id,
+                            category_id=form.category.data,
+                            title=form.title.data,
+                            description=form.description.data,
+                            ingredients=form.ingredients.data,
+                            preparation_steps=form.preparation_steps.data,
+                            image_filename=form.image_filename.data
+                            )  # noqa: E501
+            session.add(recipe)
+            session.commit()
+            flash("Receita cadastrada com sucesso!", "message")
+            return redirect(url_for("home"))
+
     else:
         # Usuário não logado
         flash("Você precisa estar logado para acessar essa página.", "error")
         return redirect(url_for('login'))
 
-    return render_template("new_recipe.html")
+    return render_template("new_recipe.html", form=form)
 
 
 """

@@ -3,4 +3,33 @@
 
 {% block content %}
     <h1>Nova Receita</h1>
+
+    <div class="col">
+            <form method="POST" action="">
+            {{ form.hidden_tag() }}
+            <div class="row">
+            {{ form.title }}
+            </div>
+            <div class="row">
+                {{ form.category }}
+
+
+            </div>
+                <div class="row">
+                {{ form.description }}
+            </div>
+                <div class="row">
+                {{ form.ingredients}}
+            </div>
+                <div class="row">
+                {{ form.preparation_steps}}
+            </div>
+                <div class="row">
+                {{ form.image_filename}}
+            </div>
+                <div class="row">
+                {{ form.submit }}
+            </div>
+            </form>
+    </div>
 {% endblock %}
