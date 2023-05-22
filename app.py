@@ -181,7 +181,9 @@ session.commit()
 
 @app.route("/")
 def home():
-    return render_template("home.html")
+    recipes = session.query(Recipe).order_by(
+            Recipe.created_at.asc()).all()
+    return render_template("home.html", recipes=recipes)
 
 
 @app.route("/register", methods=['GET', 'POST'])
