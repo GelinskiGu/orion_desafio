@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, flash, request  # noqa: F401, E501
+from flask import Flask, render_template, redirect, url_for, flash, request, abort  # noqa: F401, E501
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user, UserMixin  # noqa: F401, E501
 from flask_bcrypt import Bcrypt
 from flask_migrate import Migrate
@@ -147,12 +147,11 @@ class LoginForm(FlaskForm):
 
     def validate_password(self, password):
         user = User.query.filter_by(username=self.username.data).first()
-        print(bcrypt.generate_password_hash(password.data))
         if user and not bcrypt.check_password_hash(user.password, password.data):  # noqa: E501
             raise ValidationError('Senha incorreta.')
 
 
-class NewRecipeForm(FlaskForm):
+class RecipeForm(FlaskForm):
     title = TextAreaField(validators=[InputRequired(), Length(max=255)],
                           render_kw={"placeholder": "Título de sua receita"})
     category = SelectField('Categoria', coerce=int)
@@ -162,8 +161,21 @@ class NewRecipeForm(FlaskForm):
                                 render_kw={"placeholder": "Ingredientes de sua receita"})  # noqa: E501
     preparation_steps = TextAreaField(validators=[InputRequired()],
                                       render_kw={"placeholder": "Qual o passo-a-passo de sua receita?"})  # noqa: E501
-    image_filename = FileField(description="Coloque sua imagem da receita")
+    image_filename = FileField(
+        validators=[InputRequired()], description="Coloque sua imagem da receita")
     submit = SubmitField('Cadastrar')
+
+    def __init__(self, initial_data=None, *args, **kwargs):
+        super(RecipeForm, self).__init__(*args, **kwargs)
+        if initial_data:
+            self.populate_fields(initial_data)
+
+    def populate_fields(self, data):
+        self.title.data = data.get('title', '')
+        self.category.data = data.get('category', '')
+        self.description.data = data.get('description', '')
+        self.ingredients.data = data.get('ingredients', '')
+        self.preparation_steps.data = data.get('preparation_steps', '')
 
 
 """
@@ -181,20 +193,21 @@ session.commit()
 
 @app.route("/")
 def home():
+    # TODO: try except
     recipes = session.query(Recipe).order_by(
-            Recipe.created_at.asc()).all()
+        Recipe.created_at.asc()).all()
     return render_template("home.html", recipes=recipes)
 
 
 @app.route("/register", methods=['GET', 'POST'])
 def register():
+    # TODO: try except
     form = RegisterForm()
 
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data)
         new_user = User(username=form.username.data,
                         password=hashed_password, name=form.name.data)  # noqa: E501
-        print("Usuário criado.")
         session.add(new_user)
         session.commit()
         return redirect(url_for('login'))
@@ -204,13 +217,13 @@ def register():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    # TODO: try except
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user:
             if bcrypt.check_password_hash(user.password, form.password.data):
                 login_user(user)
-                print("Usuário logado")
                 return redirect(url_for('home'))
 
     return render_template("login.html", form=form)
@@ -218,7 +231,7 @@ def login():
 
 @app.route('/new_recipe', methods=['GET', 'POST'])
 def register_new_recipe():
-    form = NewRecipeForm()
+    form = RecipeForm()
 
     if current_user.is_authenticated:
         # Usuário está logado
@@ -226,12 +239,7 @@ def register_new_recipe():
             Category.name.asc()).all()
         form.category.choices = [(category.id, category.name)
                                  for category in categories]
-        print(form.category.choices)
-        print(form.title.data, form.category.data, form.description.data,
-              form.ingredients.data, form.preparation_steps.data,
-              form.image_filename.data)
         if form.validate_on_submit():
-            print("Validado.")
             now = datetime.now()
             path_image = f"{now.year}/{now.strftime('%m')}"
             try:
@@ -241,7 +249,6 @@ def register_new_recipe():
             except UploadNotAllowed:
                 flash("Ocorreu um erro para o salvamento da imagem.", "error")
                 return redirect(url_for("register_new_recipe"))
-            print(form.image_filename.data.filename)
             recipe = Recipe(author=current_user.id,
                             category_id=form.category.data,
                             title=form.title.data,
@@ -267,6 +274,62 @@ def register_new_recipe():
         return redirect(url_for('login'))
 
     return render_template("new_recipe.html", form=form)
+
+
+@app.route('/my_recipes')
+def my_recipes():
+    if not current_user.is_authenticated:
+        flash("Você precisa estar logado para acessar essa página.", "error")
+        return redirect(url_for('login'))
+    recipes = session.query(Recipe).filter(
+        Recipe.author == current_user.id)
+    return render_template("home.html", recipes=recipes)
+
+
+@app.route('/edit_recipe/<int:recipe_id>', methods=['GET', 'POST'])
+def edit_recipe(recipe_id):
+    if not current_user.is_authenticated:
+        flash("Você precisa estar logado para acessar essa página.", "error")
+        return redirect(url_for('login'))
+    # TODO: try except
+    recipe = session.get(Recipe, recipe_id)
+    if recipe is None:
+        abort(404)
+
+    data = {
+        'title': recipe.title,
+        'category': recipe.category,
+        'description': recipe.description,
+        'ingredients': recipe.ingredients,
+        'preparation_steps': recipe.preparation_steps,
+        'image_filename': recipe.image_filename
+    }
+    form = RecipeForm(initial_data=data)
+    categories = session.query(Category).order_by(
+        Category.name.asc()).all()
+
+    # TODO: Transformar em um set para deixar
+    # como primeira a categoria selecionada.
+    form.category.choices = [(category.id, category.name)
+                             for category in categories]
+
+    if form.validate_on_submit():
+        recipe.title = form.title.data
+        recipe.category_id = form.category.data
+        recipe.description = form.description.data
+        recipe.ingredients = form.ingredients.data
+        recipe.preparation_steps = form.preparation_steps.data
+        recipe.image_filename = form.image_filename.data.filename
+        try:
+            session.commit()
+            flash("Receita atualizada com sucesso!", "message")
+            return redirect(url_for("home"))
+        except SQLAlchemyError:
+            flash("Ocorreu um erro para atualizar receita.", "error")
+            session.rollback()
+            return redirect(url_for("home"))
+
+    return render_template("edit_recipe.html", form=form, recipe=recipe)
 
 
 """

@@ -1,14 +1,14 @@
 {% extends 'base.html' %}
-{% block title %}Nova Receita{% endblock %}
+{% block title %}Editar Receita{% endblock %}
 
 {% block content %}
-    <h1>Nova Receita</h1>
+    <h1>Editar Receita</h1>
 
     <div class="col">
             <form method="POST" action="" enctype="multipart/form-data">
             {{ form.hidden_tag() }}
             <div class="row">
-            {{ form.title(value="Título") }}
+            {{ form.title(value=recipe.title) }}
             </div>
             <div class="row">
                 {{ form.category }}
@@ -16,16 +16,16 @@
 
             </div>
                 <div class="row">
-                {{ form.description }}
+                {{ form.description(value=recipe.title) }}
             </div>
                 <div class="row">
-                {{ form.ingredients}}
+                {{ form.ingredients(value=recipe.title) }}
             </div>
                 <div class="row">
-                {{ form.preparation_steps}}
+                {{ form.preparation_steps(value=recipe.title) }}
             </div>
                 <div class="row">
-                {{ form.image_filename }}
+                {{ form.image_filename(value=recipe.title) }}
             </div>
                 <div class="row">
                 {{ form.submit }}
