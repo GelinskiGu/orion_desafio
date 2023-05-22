@@ -1,14 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
-    <title>Login</title>
-</head>
-<body>
+{% extends 'base.html' %}
+{% block content %}
     <h1>Login de Usuário: </h1>
     {% with messages = get_flashed_messages() %}
     {% if messages %}
@@ -17,19 +8,20 @@
         {% endfor %}
     {% endif %}
     {% endwith %}
+    <div class="mx-auto px-5">
     <form method="POST" action="">
             {{ form.hidden_tag() }}
             <div class="form-group">
-            {{ form.username(class="form-control") }}
+            {{ form.username(class="form-control p-4 w-75") }}
             </div>
             {% if form.username.errors %}
                 <span class="text-danger ">{{ form.username.errors[0] }}</span>
             {% endif %}
-            {{ form.password }}
+            {{ form.password(class="form-control p-4 w-75") }}
             {% if form.password.errors %}
                 {{ form.password.errors[0] }}
             {% endif %}
-             <button type="submit" class="btn btn-primary">Login</button>
+             <button type="submit" class="btn  btn-primary btn-lg mt-3">Login</button>
     </form>
-</body>
-</html>
+    </div>
+{% endblock content %}
