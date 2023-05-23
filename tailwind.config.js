@@ -10,6 +10,9 @@ module.exports = {
       sky: colors.sky,
       indigo: colors.indigo,
       red: colors.red,
+      white: colors.white,
+      black: colors.black,
+      gray: colors.gray,
     },
     extend: {
       fontFamily: {
