@@ -18,7 +18,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 path = './assets/recipes_images'
 
 # Configuracao banco de dados
-app = Flask(__name__, static_folder='assets')
+app = Flask(__name__, static_folder='static', static_url_path='/static')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:8rPTT7k#gT@localhost/orion'  # noqa: E501
 app.config['SECRET_KEY'] = 'qTUL^P3cQ%'
 app.config['UPLOADED_PHOTOS_DEST'] = os.path.join(
@@ -105,10 +105,12 @@ def load_user(user_id):
 # Formulário de cadastro
 class RegisterForm(FlaskForm):
     # Validações para o form de cadastro
-    username = StringField(validators=[InputRequired(), Length(
-        min=5, max=20)], render_kw={"placeholder": "Nome de usuário"})
-    password = PasswordField(validators=[InputRequired(), Length(
-        min=8, max=20)], render_kw={"placeholder": "Senha"})
+    username = StringField(label="Nome de usuário", validators=[
+        InputRequired(), Length(
+            min=5, max=20)])
+    password = PasswordField(label="Senha", validators=[
+        InputRequired(), Length(
+            min=8, max=20)])
     repeat_password = PasswordField(validators=[InputRequired(), Length(
         min=8, max=20)],
         render_kw={"placeholder": "Repita sua senha"})
@@ -132,10 +134,11 @@ class RegisterForm(FlaskForm):
 
 
 class LoginForm(FlaskForm):
-    username = StringField(validators=[InputRequired(), Length(
-        min=5, max=20)], render_kw={"placeholder": "Nome de usuário"})
-    password = PasswordField(validators=[InputRequired(), Length(
-        min=8, max=20)], render_kw={"placeholder": "Senha"})
+    username = StringField(label="Nome de usuário", validators=[
+        InputRequired(), Length(
+            min=5, max=20)])
+    password = PasswordField(label="Senha", validators=[InputRequired(), Length(
+        min=8, max=20)])
     submit = SubmitField('Login')
 
     def validate_username(self, username):

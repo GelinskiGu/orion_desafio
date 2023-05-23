@@ -6,7 +6,7 @@
   {% for recipe in recipes %}
   <div class="col-md-4">
     <div class="card shadow" style="width: 20rem;">
-      <img class="card-img-top custom-image-size" src="{{recipe.image_path}}" alt="Card image cap" >
+      <img class="card-img-top custom-image-size" src="/static/assets/recipes_images/{{recipe.image_path.split("photos/")[1]}}" alt="Card image cap" >
       <div class="card-body">
         <h5 class="card-title text">{{recipe.title}}</h5>
         <p class="card-text text">{{recipe.description}}</p>

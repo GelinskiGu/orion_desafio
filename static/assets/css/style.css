@@ -1,0 +1,8 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+.no-hover:hover {
+    color: inherit;
+    text-decoration: none;
+}
