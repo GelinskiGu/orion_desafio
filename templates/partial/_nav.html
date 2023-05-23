@@ -11,25 +11,36 @@
     <div class="flex flex-row gap-5 items-center" id="navbarSupportedContent">
       <ul class="flex flex-row gap-4 items-center">
         <li class="hover:text-current">
-          <a class="font-sans text-xl text-text_primary hover:text-gray-300 no-hover" href="{{ url_for('my_recipes') }}">Minhas Receitas</a>
+          <a class="font-sans text-xl text-white hover:text-gray-300 no-hover" href="{{ url_for('my_recipes') }}">Minhas Receitas</a>
         </li>
-        
-        <li class="relative">
-          <a class="font-sans text-xl text-text_primary hover:text-gray-300 no-hover" href="#" id="navbarDropdown" role="button"
-              data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Conta
-          </a>
-          <div class="absolute hidden mt-2 py-2 w-40 bg-white rounded-lg shadow-md" aria-labelledby="navbarDropdown">
-            {% if not current_user.is_authenticated %}
-              <a class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" href="{{ url_for('login') }}">Entrar</a>
-              <a class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" href="{{ url_for('register') }}">Cadastro</a>
-            {% else %}
-              <a class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" href="{{ url_for('register_new_recipe') }}">Nova Receita</a>
-              <a class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" href="{{ url_for('home') }}">Sair</a>
-            {% endif %}
 
-          </div>
-        </li>
+        
+      <button id="dropdownHoverButton" data-dropdown-toggle="dropdownHover" data-dropdown-trigger="hover" 
+      class="text-white  hover:text-gray-300 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium 
+      rounded-lg text-xl px-4 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700
+       dark:focus:ring-blue-800" type="button">Conta <svg class="w-4 h-4 ml-2" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button>
+      <!-- Dropdown menu -->
+      <div id="dropdownHover" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
+          <ul class="bg-background_primary opacity-95 py-2 text-sm text-white dark:text-gray-200" aria-labelledby="dropdownHoverButton">
+            {% if not current_user.is_authenticated %}
+            <li>
+              <a href="{{ url_for('login') }}" class="text-base block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white no-hover">Entrar</a>
+            </li>
+            <li>
+              <a href="{{ url_for('register') }}" class="text-base block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white no-hover">Cadastro</a>
+            </li>
+            {% else %}
+            <li>
+              <a href="{{ url_for('register_new_recipe') }}" class="text-base block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white no-hover">Nova Receita</a>
+            </li>
+            <li>
+              <a href="{{ url_for('home') }}" class="text-base block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white no-hover">Sair</a>
+            </li>
+
+            {% endif %}
+          </ul>
+      </div>
+
       </ul>
       <form class="flex items-center mr-5">
         <input class="form-control mr-2 py-2 px-4 rounded-md bg-gray-200 focus:outline-none focus:bg-white" type="search" placeholder="Digite o nome da receita" aria-label="Search">
@@ -38,3 +49,4 @@
       
     </div>
   </nav>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
