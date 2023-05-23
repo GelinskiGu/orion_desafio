@@ -11,7 +11,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_uploads import UploadSet, configure_uploads, IMAGES, patch_request_class, UploadNotAllowed  # noqa: F401, E501
 from datetime import datetime  # noqa: F401, E501
 import os
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import SQLAlchemyError, InvalidRequestError, OperationalError  # noqa: F401, E501
 
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -162,7 +162,8 @@ class RecipeForm(FlaskForm):
     preparation_steps = TextAreaField(validators=[InputRequired()],
                                       render_kw={"placeholder": "Qual o passo-a-passo de sua receita?"})  # noqa: E501
     image_filename = FileField(
-        validators=[InputRequired()], description="Coloque sua imagem da receita")
+        validators=[InputRequired()],
+        description="Coloque sua imagem da receita")
     submit = SubmitField('Cadastrar')
 
     def __init__(self, initial_data=None, *args, **kwargs):
@@ -196,7 +197,7 @@ def home():
     # TODO: try except
     recipes = session.query(Recipe).order_by(
         Recipe.created_at.asc()).all()
-    return render_template("home.html", recipes=recipes)
+    return render_template("home.html", recipes=recipes, request=request)
 
 
 @app.route("/register", methods=['GET', 'POST'])
@@ -283,7 +284,7 @@ def my_recipes():
         return redirect(url_for('login'))
     recipes = session.query(Recipe).filter(
         Recipe.author == current_user.id)
-    return render_template("home.html", recipes=recipes)
+    return render_template("home.html", recipes=recipes, request=request)
 
 
 @app.route('/edit_recipe/<int:recipe_id>', methods=['GET', 'POST'])
@@ -332,15 +333,33 @@ def edit_recipe(recipe_id):
     return render_template("edit_recipe.html", form=form, recipe=recipe)
 
 
-"""
-Para testar qualquer html que estiver fazendo, é só tirar o comentário desse trecho de código. # noqa: E501
-No lugar de "teste.html", colocar nome do arquivo .html que estiver localizado na pasta templates.
-Na url, colocar http://127.0.0.1:5000/teste
+@app.route('/delete_recipe/<recipe_id>')
+def delete_recipe(recipe_id):
+    if not current_user.is_authenticated:
+        flash("Você precisa estar logado para acessar essa página.", "error")
+        return redirect(url_for('login'))
 
-@app.route("/teste")
-def hello_world():
-    return render_template("teste.html")
-"""
+    recipe = session.get(Recipe, recipe_id)
+    if recipe:
+        try:
+            session.delete(recipe)
+            session.commit()
+            flash("Receita deletada com sucesso!", "success")
+            return redirect(url_for("home"))
+        except InvalidRequestError as e:
+            print("Erro de solicitação inválida:", str(e))
+            flash("Ocorreu um erro para deletar receita.", "error")
+            session.rollback()
+            return redirect(url_for("home"))
+        except OperationalError as e:
+            print("Erro operacional:", str(e))
+            flash("Ocorreu um erro para deletar receita.", "error")
+            session.rollback()
+            return redirect(url_for("home"))
+
+    else:
+        flash("Ocorreu um erro para deletar receita.", "error")
+        return redirect(url_for("home"))
 
 
 if __name__ == '__main__':
