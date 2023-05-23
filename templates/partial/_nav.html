@@ -1,6 +1,6 @@
 {% include './partial/_head.html' %}
 
-<nav class=" bg-sky-950 p-0 mb-0 flex flex-row justify-between items-center gap-6 shadow-2xl">
+<nav class=" bg-background_primary p-0 mb-0 flex flex-row justify-between items-center gap-6 shadow-2xl">
     <a class="navbar-brand" href="{{ url_for('home') }}">
       <img src="../../static/assets/images/logoOficial-300x300.png" alt="Logo" class="w-24 h-auto opacity-75 ml-4 pl-0 mt-1">
     </a>
@@ -11,11 +11,11 @@
     <div class="flex flex-row gap-5 items-center" id="navbarSupportedContent">
       <ul class="flex flex-row gap-4 items-center">
         <li class="hover:text-current">
-          <a class="font-sans text-xl text-sky-50 hover:text-gray-300 no-hover" href="{{ url_for('my_recipes') }}">Minhas Receitas</a>
+          <a class="font-sans text-xl text-text_primary hover:text-gray-300 no-hover" href="{{ url_for('my_recipes') }}">Minhas Receitas</a>
         </li>
         
         <li class="relative">
-          <a class="font-sans text-xl text-sky-50 hover:text-gray-300 no-hover" href="#" id="navbarDropdown" role="button"
+          <a class="font-sans text-xl text-text_primary hover:text-gray-300 no-hover" href="#" id="navbarDropdown" role="button"
               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Conta
           </a>

@@ -137,8 +137,9 @@ class LoginForm(FlaskForm):
     username = StringField(label="Nome de usuário", validators=[
         InputRequired(), Length(
             min=5, max=20)])
-    password = PasswordField(label="Senha", validators=[InputRequired(), Length(
-        min=8, max=20)])
+    password = PasswordField(label="Senha",
+                             validators=[InputRequired(),
+                                         Length(min=8, max=20)])
     submit = SubmitField('Login')
 
     def validate_username(self, username):

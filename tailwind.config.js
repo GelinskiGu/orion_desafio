@@ -13,6 +13,11 @@ module.exports = {
       white: colors.white,
       black: colors.black,
       gray: colors.gray,
+      background_primary: '#001B48',
+      background_secondary: '#02457A',
+      middle_color: '#018ABE',
+      text_primary: '#D6EBEE',
+      text_secondary: '#97CADB',
     },
     extend: {
       fontFamily: {
