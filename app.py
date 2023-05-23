@@ -18,7 +18,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 path = './assets/recipes_images'
 
 # Configuracao banco de dados
-app = Flask(__name__)
+app = Flask(__name__, static_folder='assets')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:8rPTT7k#gT@localhost/orion'  # noqa: E501
 app.config['SECRET_KEY'] = 'qTUL^P3cQ%'
 app.config['UPLOADED_PHOTOS_DEST'] = os.path.join(
