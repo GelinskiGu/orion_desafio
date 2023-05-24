@@ -45,5 +45,5 @@
   py app.py
   ```
 
-  Acesse o projeto no navegador usando a URL __http://localhost:5000__  , em que, por padrão, localhost é **http://127.0.0.1**
+  Acesse o projeto no navegador usando a URL __http://localhost:5000__  , em que, por padrão, localhost é **127.0.0.1**
 
