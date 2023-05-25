@@ -12,10 +12,11 @@ from flask_uploads import UploadSet, configure_uploads, IMAGES, patch_request_cl
 from datetime import datetime  # noqa: F401, E501
 import os
 from sqlalchemy.exc import SQLAlchemyError, InvalidRequestError, OperationalError  # noqa: F401, E501
+import re
 
 
 basedir = os.path.abspath(os.path.dirname(__file__))
-path = './assets/recipes_images'
+path = './static/assets/recipes_images'
 
 # Configuracao banco de dados
 app = Flask(__name__, static_folder='static', static_url_path='/static')
@@ -107,14 +108,16 @@ class RegisterForm(FlaskForm):
     # Validações para o form de cadastro
     username = StringField(label="Nome de usuário", validators=[
         InputRequired(), Length(
-            min=5, max=20)])
+            min=5, max=20)],
+        render_kw={"placeholder": "Nome de Usuário"})
     password = PasswordField(label="Senha", validators=[
         InputRequired(), Length(
-            min=8, max=20)])
-    repeat_password = PasswordField(validators=[InputRequired(), Length(
-        min=8, max=20)],
-        render_kw={"placeholder": "Repita sua senha"})
-    name = StringField(validators=[InputRequired(), Length(
+            min=8, max=20)], render_kw={"placeholder": "Senha"})
+    repeat_password = PasswordField(label="Repita sua senha",
+                                    validators=[InputRequired(), Length(
+                                        min=8, max=20)],
+                                    render_kw={"placeholder": "Repita sua senha"})  # noqa: E501
+    name = StringField(label="Nome", validators=[InputRequired(), Length(
         min=8, max=255)], render_kw={"placeholder": "Nome Completo"})
     submit = SubmitField('Register')
 
@@ -202,6 +205,12 @@ def home():
     recipes = session.query(Recipe).order_by(
         Recipe.created_at.asc()).all()
     return render_template("home.html", recipes=recipes, request=request)
+
+
+def validate_string(string):
+    if re.search(r'\d', string) is not None and re.search(r'[a-zA-Z]', string) is not None and re.search(r'\W', string) is not None:  # noqa: E501
+        return True
+    return False
 
 
 @app.route("/register", methods=['GET', 'POST'])

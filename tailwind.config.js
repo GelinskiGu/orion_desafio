@@ -18,6 +18,7 @@ module.exports = {
       middle_color: '#018ABE',
       text_primary: '#D6EBEE',
       text_secondary: '#97CADB',
+      blue: colors.blue,
     },
     extend: {
       fontFamily: {
