@@ -4,7 +4,7 @@
 {% block content %}
     <div class='min-h-screen bg-background_secondary py-3 mt-1 pt-4'>
         <div class="flex flex-row-reverse w-full px-5 h-full max-h-screen justify-center">
-            <div class="flex items-center w-1/2 justify-self-center h-fit">
+            <div class="flex items-center w-1/2 justify-start h-fit">
                 <img class="object-contain self-center w-auto m-auto opacity-95 rounded-xl  shadow-xl" src="{{recipe.image_path}}" alt="Imagem da receita">
             </div>
             
@@ -12,44 +12,63 @@
                 <div class="border-middle_color bg-middle_color border-r-4 border-l-4"></div>
             </div>
 
-            <div class="flex flex-col w-1/2 justify-self-center items-center">
-                <div class="m-3 font-bold text-white text-5xl">
+                <div class="flex flex-col w-1/2 justify-start">
+                    <div class="m-3 font-bold text-5xl">
+                    <p class="text-white">
                     {{recipe.title}}
-                </div>
+                    </p>
+                    <p class="m-2 text-sm text-sky-400">
+                        Por: {{author.name}}
+                    </p>
+                    </div>
 
-                <div class="w-screen">
+                    <div class="w-screen">
+                        <div class="border-middle_color bg-middle_color border-t-2 border-b-2 w-96"></div>
+                        </div>
+    
+    
+                        <div class="m-3 text-white">
+                        <h1 class="m-3 font-bold text-2xl">Descrição</h1>
+                        <ul class="list-none">
+                            <li>{{recipe.description}}</li>
+                        </ul>
+                        </div>
+
+
+
+                     <div class="w-screen">
                     <div class="border-middle_color bg-middle_color border-t-2 border-b-2 w-96"></div>
-                </div>
+                    </div>
                 
-                <div class="m-3 text-white">
+                     <div class="m-3 text-white">
                     <h1 class="m-3 font-bold text-2xl">Ingredientes</h1>
                     <ul class="list-disc">
-                        <li>{{recipe.preparation_steps}}</li>
+                        {% for ingredient in ingredients %}
+                        <li>{{ingredient}}</li>
+                        {% endfor %}
                     </ul>  
-                </div>
+                    </div>
                 
-                <div class="w-screen">
+                     <div class="w-screen">
                     <div class="border-middle_color bg-middle_color border-t-2 border-b-2 w-96"></div>
-                </div>
+                    </div>
 
                 
-                <div class="m-3 text-white">
-                    <ul class="list-disc">
-                        <li>{{recipe.ingredients}}</li>
-                    </ul>
-                </div>
+                    <div class="m-3 text-white">
+                    <h1 class="m-3 font-bold text-2xl">Modo de preparo</h1>
+                    <ul class="list-decimal">
+                        {% for step in steps %}
+                        <li>{{step}}</li>
+                        {% endfor %}
+                        </ul>
+                    </div>
                 
-                <div class="w-screen">
+                    <div class="w-screen">
                     <div class="border-middle_color bg-middle_color border-t-2 border-b-2 w-96"></div>
-                </div>
+                    </div>
 
-
-                <div class="m-3 text-white">
-                    <ul class="list-disc">
-                        <li>{{recipe.description}}</li>
-                    </ul>
+            
                 </div>
-            </div>
         </div>
     </div>
     

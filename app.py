@@ -166,9 +166,9 @@ class RecipeForm(FlaskForm):
     description = TextAreaField(label="Descrição da receita", validators=[InputRequired()],  # noqa: E501
                                 render_kw={"placeholder": "Descrição de sua receita"})  # noqa: E501
     ingredients = TextAreaField(label="Ingredientes da receita", validators=[InputRequired()],  # noqa: E501
-                                render_kw={"placeholder": "Insira um ingrediente por linhas"})  # noqa: E501
+                                render_kw={"placeholder": "Insira um ingrediente por linha"})  # noqa: E501
     preparation_steps = TextAreaField(label="Passos de preparo da receita", validators=[InputRequired()],  # noqa: E501
-                                      render_kw={"placeholder": "Qual o passo-a-passo de sua receita?"})  # noqa: E501
+                                      render_kw={"placeholder": "Insira um passo por linha"})  # noqa: E501
     image_filename = FileField("Imagem da receita",
                                validators=[InputRequired()],
                                description="Coloque sua imagem da receita")
@@ -207,7 +207,7 @@ session.commit()
 def home():
     # TODO: try except
     recipes = session.query(Recipe).order_by(
-        Recipe.created_at.asc()).all()
+        Recipe.created_at.desc()).all()
     return render_template("home.html", recipes=recipes, request=request)
 
 
@@ -258,8 +258,6 @@ def register_new_recipe():
             Category.name.asc()).all()
         form.category.choices = [(category.id, category.name)
                                  for category in categories]
-        print(form.title.data)
-        print(form.category.data)
 
         if form.validate_on_submit():
             print(form.title.data)
@@ -305,7 +303,7 @@ def my_recipes():
         flash("Você precisa estar logado para acessar essa página.", "error")
         return redirect(url_for('login'))
     recipes = session.query(Recipe).filter(
-        Recipe.author == current_user.id).all()
+        Recipe.author == current_user.id).order_by(Recipe.created_at.desc()).all()  # noqa: E501
 
     return render_template("home.html", recipes=recipes, request=request)
 
@@ -390,7 +388,10 @@ def recipe_details(recipe_id):
     recipe = session.get(Recipe, recipe_id)
     if recipe is None:
         abort(404)
-    return render_template("recipe_details.html", recipe=recipe)
+    author = session.query(User).get(recipe.author)
+    steps = recipe.preparation_steps.split('\n')
+    ingredients = recipe.ingredients.split('\n')
+    return render_template("recipe_details.html", recipe=recipe, author=author, steps=steps, ingredients=ingredients)  # noqa: E501
 
 
 if __name__ == '__main__':
