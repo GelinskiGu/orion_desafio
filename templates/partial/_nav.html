@@ -11,14 +11,14 @@
     <div class="flex flex-row gap-5 items-center" id="navbarSupportedContent">
       <ul class="flex flex-row gap-4 items-center">
         <li class="hover:text-current">
-          <a class="font-sans text-xl text-white hover:text-gray-300 no-hover" href="{{ url_for('my_recipes') }}">Minhas Receitas</a>
+          <a class="font-medium text-xl text-white hover:text-gray-300 no-hover" href="{{ url_for('register_new_recipe') }}">Nova Receita</a>
         </li>
 
         
       <button id="dropdownHoverButton" data-dropdown-toggle="dropdownHover" data-dropdown-trigger="hover" 
       class="text-white  hover:text-gray-300 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium 
       rounded-lg text-xl px-4 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700
-       dark:focus:ring-blue-800" type="button">Conta <svg class="w-4 h-4 ml-2" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button>
+       dark:focus:ring-blue-800" type="button">{% if current_user.is_authenticated %} {{current_user.name}} {% else %} Acesse {% endif %}<svg class="w-4 h-4 ml-2" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button>
       <!-- Dropdown menu -->
       <div id="dropdownHover" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
           <ul class="bg-background_primary opacity-95 py-2 text-sm text-white dark:text-gray-200" aria-labelledby="dropdownHoverButton">
@@ -31,7 +31,10 @@
             </li>
             {% else %}
             <li>
-              <a href="{{ url_for('register_new_recipe') }}" class="text-base block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white no-hover">Nova Receita</a>
+              <a href="{{ url_for('my_recipes') }}" class="text-base block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white no-hover">Minhas Receitas</a>
+            </li>
+            <li>
+              <a href="{{ url_for('my_recipes') }}" class="text-base block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white no-hover">Receitas Salvas</a>
             </li>
             <li>
               <a href="{{ url_for('logout') }}" class="text-base block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white no-hover">Sair</a>

@@ -166,7 +166,7 @@ class RecipeForm(FlaskForm):
     description = TextAreaField(label="Descrição da receita", validators=[InputRequired()],  # noqa: E501
                                 render_kw={"placeholder": "Descrição de sua receita"})  # noqa: E501
     ingredients = TextAreaField(label="Ingredientes da receita", validators=[InputRequired()],  # noqa: E501
-                                render_kw={"placeholder": "Ingredientes de sua receita"})  # noqa: E501
+                                render_kw={"placeholder": "Insira um ingrediente por linhas"})  # noqa: E501
     preparation_steps = TextAreaField(label="Passos de preparo da receita", validators=[InputRequired()],  # noqa: E501
                                       render_kw={"placeholder": "Qual o passo-a-passo de sua receita?"})  # noqa: E501
     image_filename = FileField("Imagem da receita",
@@ -188,12 +188,15 @@ class RecipeForm(FlaskForm):
 
 
 """
+session.delete_all()
+
 categories = [
-    Category(name='Café'),
-    Category(name='Salgados'),
-    Category(name='Doces'),
-    Category(name='Bolos'),
-    Category(name='Tortas')
+    Category(name='Entradas'),
+    Category(name='Lanches'),
+    Category(name='Pratos Principais'),
+    Category(name='Bebidas'),
+    Category(name='Sobremesas'),
+    Category(name='Outros'),
 ]
 session.add_all(categories)
 session.commit()
@@ -242,7 +245,7 @@ def login():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('login'))
+    return redirect(url_for('home'))
 
 
 @app.route('/new_recipe', methods=['GET', 'POST'])
@@ -255,6 +258,8 @@ def register_new_recipe():
             Category.name.asc()).all()
         form.category.choices = [(category.id, category.name)
                                  for category in categories]
+        print(form.title.data)
+        print(form.category.data)
 
         if form.validate_on_submit():
             print(form.title.data)
@@ -275,8 +280,7 @@ def register_new_recipe():
                             ingredients=form.ingredients.data,
                             preparation_steps=form.preparation_steps.data,
                             image_filename=form.image_filename.data.filename,
-                            image_path=file_url
-                            )  # noqa: E501
+                            image_path=file_url)  # noqa: E501
             try:
                 session.add(recipe)
                 session.commit()
@@ -301,7 +305,8 @@ def my_recipes():
         flash("Você precisa estar logado para acessar essa página.", "error")
         return redirect(url_for('login'))
     recipes = session.query(Recipe).filter(
-        Recipe.author == current_user.id)
+        Recipe.author == current_user.id).all()
+
     return render_template("home.html", recipes=recipes, request=request)
 
 

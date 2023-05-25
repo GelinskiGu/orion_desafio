@@ -13,26 +13,31 @@
             </div>
 
             <div class="flex flex-col w-1/2 justify-self-center items-center">
-                <div class="m-3 font-bold text-white text-5xl text-">
-                    {{recipe.ingredients}}  
-                </div>
-
-                <div class="w-screen">
-                    <div class="border-middle_color bg-middle_color border-t-2 border-b-2 w-96"></div>
-                </div>
-                
-                <div class="m-3 text-white">
-                    {{recipe.preparation_steps}}
-                </div>
-                
-                <div class="w-screen">
-                    <div class="border-middle_color bg-middle_color border-t-2 border-b-2 w-96"></div>
-                </div>
-
-                
-                <div class="m-3 text-white">
+                <div class="m-3 font-bold text-white text-5xl">
                     {{recipe.title}}
                 </div>
+
+                <div class="w-screen">
+                    <div class="border-middle_color bg-middle_color border-t-2 border-b-2 w-96"></div>
+                </div>
+                
+                <div class="m-3 text-white">
+                    <h1 class="m-3 font-bold text-2xl">Ingredientes</h1>
+                    <ul class="list-disc">
+                        <li>{{recipe.preparation_steps}}</li>
+                    </ul>  
+                </div>
+                
+                <div class="w-screen">
+                    <div class="border-middle_color bg-middle_color border-t-2 border-b-2 w-96"></div>
+                </div>
+
+                
+                <div class="m-3 text-white">
+                    <ul class="list-disc">
+                        <li>{{recipe.ingredients}}</li>
+                    </ul>
+                </div>
                 
                 <div class="w-screen">
                     <div class="border-middle_color bg-middle_color border-t-2 border-b-2 w-96"></div>
@@ -40,7 +45,9 @@
 
 
                 <div class="m-3 text-white">
-                    {{recipe.description}}
+                    <ul class="list-disc">
+                        <li>{{recipe.description}}</li>
+                    </ul>
                 </div>
             </div>
         </div>

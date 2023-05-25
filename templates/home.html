@@ -3,19 +3,33 @@
 
 {% block content %}
 <!-- This is an example component -->
+
 <div class='min-h-screen from-background_primary to-background_secondary bg-gradient-to-br w-11/12 py-3 mt-1'>
   <div class='flex flex-wrap gap-6 justify-center pt-6'>
-    {% for recipe in recipes %}
-      <div class='flex flex-col max-w-md w-1/2 px-5 rounded-3xl bg-background_secondary hover:opacity-80'>
-        <div class='mb-2 h-60 bg-cover bg-center mt-4 rounded-lg opacity-90' style="background-image: url('/static/assets/recipes_images/{{ recipe.image_path.split('photos/')[1] }}')"></div>
-        <p class='font-bold text-white text-[22px] leading-7 mb-0'>{{recipe.title}}</p>
-        
-        <p class='text-white font-[15px] mt-0'>{{recipe.description}}</p>
-        <button  href='#' class=' mb-4 text-white rounded-lg block mt-10 w-full px-4 py-3 font-medium tracking-wide text-center capitalize transition-colors duration-300 transform bg-middle_color hover:bg-text_secondary focus:outline-none focus:ring focus:ring-teal-300 focus:ring-opacity-80'>
-          Ver Receita
-        </button>
+    {% if not recipes %}
+    <div class="flex flex-col justify-around gap-6 items-center mt-14">
+      <div class="bg-blue-100 border-t border-b border-blue-500 text-blue-700 px-4 py-3 rounded-xl" role="alert">
+        <p class="font-bold text-xl">Ops!</p>
+        <p class="text-base">Você não possui receitas cadastradas.</p>
       </div>
-    {% endfor %}
+      <a href="{{url_for('register_new_recipe')}}" class="no-hover flex w-60 justify-center rounded-md bg-purple-600 hover:bg-purple-500 text-lg font-semibold 
+                text-white  shadow-sm focus-visible:outline 
+                focus-visible:outline-2 focus-visible:outline-offset-2 px-5 py-1 border-white">Nova Receita</a>
+              </div>
+    {% else %}
+    
+      {% for recipe in recipes %}
+        <div class='flex flex-col max-w-md w-1/2 px-5 rounded-3xl bg-background_secondary hover:opacity-80'>
+          <div class='mb-2 h-60 bg-cover bg-center mt-4 rounded-lg opacity-90' style="background-image: url('/static/assets/recipes_images/{{ recipe.image_path.split('photos/')[1] }}')"></div>
+          <p class='font-bold text-white text-[22px] leading-7 mb-0'>{{recipe.title}}</p>
+          
+          <p class='text-white font-[15px] mt-0'>{{recipe.description}}</p>
+          <a  href='{{ url_for("recipe_details", recipe_id=recipe.id) }}' class='no-hover mb-4 text-white rounded-lg block mt-10 w-full px-4 py-3 font-medium tracking-wide text-center capitalize transition-colors duration-300 transform bg-middle_color hover:bg-text_secondary focus:outline-none focus:ring focus:ring-teal-300 focus:ring-opacity-80'>
+            Ver Receita
+          </a>
+        </div>
+      {% endfor %}
+    {% endif %}
   </div>
 </div>
 
