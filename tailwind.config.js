@@ -19,6 +19,7 @@ module.exports = {
       text_primary: '#D6EBEE',
       text_secondary: '#97CADB',
       blue: colors.blue,
+      purple: colors.purple,
     },
     extend: {
       fontFamily: {
