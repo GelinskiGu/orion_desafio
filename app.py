@@ -245,6 +245,13 @@ def login():
     return render_template("login.html", form=form)
 
 
+@app.route('/logout', methods=['GET', 'POST'])
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
+
+
 @app.route('/new_recipe', methods=['GET', 'POST'])
 def register_new_recipe():
     form = RecipeForm()
