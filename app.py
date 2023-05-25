@@ -13,15 +13,15 @@ from datetime import datetime  # noqa: F401, E501
 import os
 from sqlalchemy.exc import SQLAlchemyError, InvalidRequestError, OperationalError  # noqa: F401, E501
 import re
-
+from config import SQLALCHEMY_DATABASE_URI, SECRET_KEY
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 path = './static/assets/recipes_images'
 
 # Configuracao banco de dados
 app = Flask(__name__, static_folder='static', static_url_path='/static')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:8rPTT7k#gT@localhost/orion'  # noqa: E501
-app.config['SECRET_KEY'] = 'qTUL^P3cQ%'
+app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI  # noqa: E501
+app.config['SECRET_KEY'] = SECRET_KEY
 app.config['UPLOADED_PHOTOS_DEST'] = os.path.join(
     basedir, path)
 
