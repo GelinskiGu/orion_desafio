@@ -208,6 +208,8 @@ def home():
 
 
 def validate_string(string):
+    if string:
+        return "Teste"
     if re.search(r'\d', string) is not None and re.search(r'[a-zA-Z]', string) is not None and re.search(r'\W', string) is not None:  # noqa: E501
         return True
     return False
