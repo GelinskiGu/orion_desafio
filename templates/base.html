@@ -15,10 +15,13 @@
 <body>
     <div class="from-sky-950 via-sky-600 to-sky-200 bg-gradient-to-br">
         {% include "./partial/_nav.html" %}
-        {% include "./partial/_success_mensage.html" %}
+        <div class="h-full">
             {% block content %}
+                {% include "./partial/_success_mensage.html" %}
+
             
             {% endblock %}
+        </div>
     </div>
 </body>
 

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, flash, request, abort  # noqa: F401, E501
+from flask import Flask, render_template, redirect, url_for, flash, request, abort, jsonify  # noqa: F401, E501
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user, UserMixin  # noqa: F401, E501
 from flask_bcrypt import Bcrypt
 from flask_migrate import Migrate
@@ -12,7 +12,6 @@ from flask_uploads import UploadSet, configure_uploads, IMAGES, patch_request_cl
 from datetime import datetime  # noqa: F401, E501
 import os
 from sqlalchemy.exc import SQLAlchemyError, InvalidRequestError, OperationalError  # noqa: F401, E501
-import re
 from config import SQLALCHEMY_DATABASE_URI, SECRET_KEY
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -139,10 +138,12 @@ class RegisterForm(FlaskForm):
 class LoginForm(FlaskForm):
     username = StringField(label="Nome de usuário", validators=[
         InputRequired(), Length(
-            min=5, max=20)])
+            min=5, max=20)],
+        render_kw={"placeholder": "Seu nome de usuário"})
     password = PasswordField(label="Senha",
                              validators=[InputRequired(),
-                                         Length(min=8, max=20)])
+                                         Length(min=8, max=20)],
+                             render_kw={"placeholder": "Sua senha"})
     submit = SubmitField('Login')
 
     def validate_username(self, username):
@@ -159,18 +160,18 @@ class LoginForm(FlaskForm):
 
 
 class RecipeForm(FlaskForm):
-    title = TextAreaField(validators=[InputRequired(), Length(max=255)],
+    title = TextAreaField(label="Título da receita", validators=[InputRequired(), Length(max=255)],  # noqa: E501
                           render_kw={"placeholder": "Título de sua receita"})
     category = SelectField('Categoria', coerce=int)
-    description = TextAreaField(validators=[InputRequired()],
+    description = TextAreaField(label="Descrição da receita", validators=[InputRequired()],  # noqa: E501
                                 render_kw={"placeholder": "Descrição de sua receita"})  # noqa: E501
-    ingredients = TextAreaField(validators=[InputRequired()],
+    ingredients = TextAreaField(label="Ingredientes da receita", validators=[InputRequired()],  # noqa: E501
                                 render_kw={"placeholder": "Ingredientes de sua receita"})  # noqa: E501
-    preparation_steps = TextAreaField(validators=[InputRequired()],
+    preparation_steps = TextAreaField(label="Passos de preparo da receita", validators=[InputRequired()],  # noqa: E501
                                       render_kw={"placeholder": "Qual o passo-a-passo de sua receita?"})  # noqa: E501
-    image_filename = FileField(
-        validators=[InputRequired()],
-        description="Coloque sua imagem da receita")
+    image_filename = FileField("Imagem da receita",
+                               validators=[InputRequired()],
+                               description="Coloque sua imagem da receita")
     submit = SubmitField('Cadastrar')
 
     def __init__(self, initial_data=None, *args, **kwargs):
@@ -205,14 +206,6 @@ def home():
     recipes = session.query(Recipe).order_by(
         Recipe.created_at.asc()).all()
     return render_template("home.html", recipes=recipes, request=request)
-
-
-def validate_string(string):
-    if string:
-        return "Teste"
-    if re.search(r'\d', string) is not None and re.search(r'[a-zA-Z]', string) is not None and re.search(r'\W', string) is not None:  # noqa: E501
-        return True
-    return False
 
 
 @app.route("/register", methods=['GET', 'POST'])
@@ -262,7 +255,10 @@ def register_new_recipe():
             Category.name.asc()).all()
         form.category.choices = [(category.id, category.name)
                                  for category in categories]
+
         if form.validate_on_submit():
+            print(form.title.data)
+            print(form.category.data)
             now = datetime.now()
             path_image = f"{now.year}/{now.strftime('%m')}"
             try:
@@ -382,6 +378,14 @@ def delete_recipe(recipe_id):
     else:
         flash("Ocorreu um erro para deletar receita.", "error")
         return redirect(url_for("home"))
+
+
+@app.route('/recipe_details/<recipe_id>')
+def recipe_details(recipe_id):
+    recipe = session.get(Recipe, recipe_id)
+    if recipe is None:
+        abort(404)
+    return render_template("recipe_details.html", recipe=recipe)
 
 
 if __name__ == '__main__':
