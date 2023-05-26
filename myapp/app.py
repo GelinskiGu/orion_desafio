@@ -22,7 +22,6 @@ app.config['SECRET_KEY'] = SECRET_KEY
 app.config['UPLOADED_PHOTOS_DEST'] = os.path.join(
     basedir, path)
 
-# bcrypt = Bcrypt(app)
 engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
 
 Session = sessionmaker(bind=engine)
@@ -38,141 +37,10 @@ photos = UploadSet('photos', IMAGES)
 configure_uploads(app, photos)
 patch_request_class(app)  # set maximum file size, default is 16MB
 
-"""
-class User(UserMixin, db.Model):
-    __tablename__ = 'users'
-
-    id = Column(Integer, primary_key=True)
-    username = Column(String(20), nullable=False, unique=True)
-    password = Column(LargeBinary, nullable=False)
-    name = Column(String(255), nullable=False)
-
-    def __init__(self, username, password, name):
-        self.username = username
-        self.password = password
-        self.name = name
-
-
-class Category(db.Model):
-    __tablename__ = 'categories'
-
-    id = db.Column(Integer, primary_key=True)
-    name = db.Column(String(64), nullable=False, unique=True)
-
-    def __init__(self, name):
-        self.name = name
-
-
-class Recipe(db.Model):
-    __tablename__ = 'recipes'
-
-    id = db.Column(Integer, primary_key=True)
-    author = db.Column(Integer, ForeignKey('users.id'))
-    category_id = db.Column(Integer, ForeignKey('categories.id'))
-    category = db.relationship("Category")
-    title = db.Column(String(255), nullable=False)
-    description = db.Column(String, nullable=True)
-    ingredients = db.Column(String, nullable=True)
-    preparation_steps = db.Column(String, nullable=True)
-    created_at = db.Column(DateTime, nullable=False, default=func.now())
-    image_filename = db.Column(String, nullable=True)
-    image_path = db.Column(String, nullable=True)
-"""
-
 
 @login_manager.user_loader
 def load_user(user_id):
     return session.get(User, user_id)
-
-
-"""
-# Formulário de cadastro
-class RegisterForm(FlaskForm):
-    # Validações para o form de cadastro
-    username = StringField(label="Nome de usuário", validators=[
-        InputRequired(), Length(
-            min=5, max=20)],
-        render_kw={"placeholder": "Nome de Usuário"})
-    password = PasswordField(label="Senha", validators=[
-        InputRequired(), Length(
-            min=8, max=20)], render_kw={"placeholder": "Senha"})
-    repeat_password = PasswordField(label="Repita sua senha",
-                                    validators=[InputRequired(), Length(
-                                        min=8, max=20)],
-                                    render_kw={"placeholder": "Repita sua senha"})  # noqa: E501
-    name = StringField(label="Nome", validators=[InputRequired(), Length(
-        min=8, max=255)], render_kw={"placeholder": "Nome Completo"})
-    submit = SubmitField('Register')
-
-    # Checagem para não existir usuários com mesmo username
-    def validate_username(self, username):
-        existing_user_username = User.query.filter_by(
-            username=username.data).first()
-        if existing_user_username:
-            raise ValidationError(
-                'Nome de usuário já existe. Favor escolher um nome diferente.')
-
-    def validate_repeat_password(self, repeat_password):
-        if repeat_password.data != self.password.data:
-            raise ValidationError('As senhas não conferem.')
-
-# Formulário de login
-
-
-class LoginForm(FlaskForm):
-    username = StringField(label="Nome de usuário", validators=[
-        InputRequired(), Length(
-            min=5, max=20)],
-        render_kw={"placeholder": "Seu nome de usuário"})
-    password = PasswordField(label="Senha",
-                             validators=[InputRequired(),
-                                         Length(min=8, max=20)],
-                             render_kw={"placeholder": "Sua senha"})
-    submit = SubmitField('Login')
-
-    def validate_username(self, username):
-        user = User.query.filter_by(username=username.data).first()
-        if not user:
-            raise ValidationError('Usuário não existe.')
-        else:
-            return True
-
-    def validate_password(self, password):
-        user = User.query.filter_by(username=self.username.data).first()
-        if user and not bcrypt.check_password_hash(user.password, password.data):  # noqa: E501
-            raise ValidationError('Senha incorreta.')
-
-
-class RecipeForm(FlaskForm):
-    title = TextAreaField(label="Título da receita", validators=[InputRequired(), Length(max=255)],  # noqa: E501
-                          render_kw={"placeholder": "Título de sua receita"})
-    category = SelectField('Categoria', coerce=int)
-    description = TextAreaField(label="Descrição da receita", validators=[InputRequired()],  # noqa: E501
-                                render_kw={"placeholder": "Descrição de sua receita"})  # noqa: E501
-    ingredients = TextAreaField(label="Ingredientes da receita", validators=[InputRequired()],  # noqa: E501
-                                render_kw={"placeholder": "Insira um ingrediente por linha"})  # noqa: E501
-    preparation_steps = TextAreaField(label="Passos de preparo da receita", validators=[InputRequired()],  # noqa: E501
-                                      render_kw={"placeholder": "Insira um passo por linha"})  # noqa: E501
-    image_filename = FileField("Imagem da receita",
-                               validators=[InputRequired()],
-                               description="Coloque sua imagem da receita")
-    submit = SubmitField('Cadastrar')
-
-
-session.delete_all()
-
-categories = [
-    Category(name='Entradas'),
-    Category(name='Lanches'),
-    Category(name='Pratos Principais'),
-    Category(name='Bebidas'),
-    Category(name='Sobremesas'),
-    Category(name='Outros'),
-]
-session.add_all(categories)
-session.commit()
-
- """
 
 
 @app.route("/")
