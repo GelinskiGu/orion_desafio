@@ -58,7 +58,9 @@
                     <h1 class="m-3 font-bold text-2xl">Modo de preparo</h1>
                     <ul class="list-decimal">
                         {% for step in steps %}
-                        <li>{{step}}</li>
+                            {% if step %}
+                            <li>{{step}}</li>
+                            {% endif %}
                         {% endfor %}
                         </ul>
                     </div>

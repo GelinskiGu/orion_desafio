@@ -208,7 +208,15 @@ def home():
     # TODO: try except
     recipes = session.query(Recipe).order_by(
         Recipe.created_at.desc()).all()
-    return render_template("home.html", recipes=recipes, request=request)
+    categories = session.query(Category).all()
+    context = {
+        'recipes': recipes,
+        'categories': categories
+    }
+    print(recipes)
+    print(categories)
+    return render_template("home.html", **context)  # noqa: E501
+  # noqa: E501
 
 
 @app.route("/register", methods=['GET', 'POST'])
@@ -230,6 +238,8 @@ def register():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     # TODO: try except
+    if current_user.is_authenticated:
+        flash('Você já está logado.', 'error')
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
@@ -282,7 +292,7 @@ def register_new_recipe():
             try:
                 session.add(recipe)
                 session.commit()
-                flash("Receita cadastrada com sucesso!", "message")
+                flash("Receita cadastrada com sucesso!", "success")
                 return redirect(url_for("home"))
             except SQLAlchemyError:
                 flash("Ocorreu um erro para cadastrar receita.", "error")
@@ -392,6 +402,15 @@ def recipe_details(recipe_id):
     steps = recipe.preparation_steps.split('\n')
     ingredients = recipe.ingredients.split('\n')
     return render_template("recipe_details.html", recipe=recipe, author=author, steps=steps, ingredients=ingredients)  # noqa: E501
+
+
+@app.route('/category/<category_id>')
+def category(category_id):
+    recipes = session.query(Recipe).filter(Recipe.category_id == category_id).order_by(Recipe.created_at.desc()).all()  # noqa: E501
+    categories = session.query(Category).all()
+    if category is None:
+        abort(404)
+    return render_template("home.html", recipes=recipes, categories=categories)
 
 
 if __name__ == '__main__':

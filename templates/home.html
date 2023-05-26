@@ -3,10 +3,17 @@
 
 {% block content %}
 <!-- This is an example component -->
+<div class='min-h-screen from-background_primary to-background_secondary bg-gradient-to-br w-11/12 py-1 mt-1'>
+  <div class="bg-sky-700 h-15 flex flex-row justify-center gap-6 w-full">
+    {% for category in categories %}
+  
+      <a href="{{url_for('category', category_id=category.id)}}" class="my-3 mx-5 text-2xl text-white font-bold">{{category.name}}</a>
+    
+    {% endfor %}
+  </div>
 
-<div class='min-h-screen from-background_primary to-background_secondary bg-gradient-to-br w-11/12 py-3 mt-1'>
-  <div class='flex flex-wrap gap-6 justify-center pt-6'>
-    {% if not recipes %}
+  <div class='flex flex-wrap gap-6 justify-center pt-6 mb-5'>
+    {% if not recipes and request.path == '/my_recipes' %}
     <div class="flex flex-col justify-around gap-6 items-center mt-14">
       <div class="bg-blue-100 border-t border-b border-blue-500 text-blue-700 px-4 py-3 rounded-xl" role="alert">
         <p class="font-bold text-xl">Ops!</p>
@@ -25,6 +32,16 @@
           
           <p class='text-white font-[15px] mt-0'>{{recipe.description}}</p>
           <a  href='{{ url_for("recipe_details", recipe_id=recipe.id) }}' class='no-hover mb-4 text-white rounded-lg block mt-10 w-full px-4 py-3 font-medium tracking-wide text-center capitalize transition-colors duration-300 transform bg-middle_color hover:bg-text_secondary focus:outline-none focus:ring focus:ring-teal-300 focus:ring-opacity-80'>
+
+<!--
+class="flex w-60 justify-center rounded-md bg-purple-600 hover:bg-purple-500 text-lg font-semibold 
+                text-white  shadow-sm focus-visible:outline 
+                focus-visible:outline-2 focus-visible:outline-offset-2 px-5 py-1 border-white"
+  -->
+
+
+
+
             Ver Receita
           </a>
           {% if request.path == '/my_recipes' %}
