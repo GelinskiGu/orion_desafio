@@ -11,7 +11,7 @@ from werkzeug.utils import secure_filename  # noqa: F401
 from werkzeug.datastructures import FileStorage  # noqa: F401
 from .extensions import db, bcrypt
 from .models import User, Category, Recipe
-from .forms import LoginForm, RegisterForm, RecipeForm  # noqa: F401, E501
+from .forms import CategoryForm, LoginForm, RegisterForm, RecipeForm  # noqa: F401, E501
 
 
 def create_app():
@@ -248,4 +248,22 @@ def create_app():
             abort(404)
         return render_template("home.html", recipes=recipes, categories=categories)  # noqa: E501
 
+    @app.route('/register_category')
+    def register_category():
+        form = CategoryForm()
+
+        if current_user.is_authenticated and current_user.id == 1:
+            if form.validate_on_submit():
+                category = Category(name=form.name.data)  # noqa: E501
+                try:
+                    session.add(category)
+                    session.commit()
+                    flash("Categoria cadastrada com sucesso!", category="success")  # noqa: E501
+                    return redirect(url_for("home"))
+                except SQLAlchemyError:
+                    flash("Ocorreu um erro para cadastrar receita.", "error")
+                    session.rollback()
+                    return redirect(url_for("register_new_recipe"))
+
+        return render_template("register_category.html", form=form)
     return app

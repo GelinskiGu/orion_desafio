@@ -77,3 +77,11 @@ class RecipeForm(FlaskForm):
                                validators=[InputRequired()],
                                description="Coloque sua imagem da receita")
     submit = SubmitField('Cadastrar')
+
+
+class CategoryForm(FlaskForm):
+    name = StringField(label="Categoria", validators=[
+        InputRequired(), Length(
+            min=0, max=20)],
+        render_kw={"placeholder": "Categoria"})
+    submit = SubmitField('Cadastrar')
