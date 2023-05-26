@@ -10,35 +10,64 @@
             {{form.title.label}}
         </label>
         <div class="justify-self-end">
+          {% if recipe %}
+            <textarea type="text" name="{{form.title.id}}" class=" h-auto w-64  shadow-xl rounded-xl">{{recipe.title}}</textarea>
+          {% else %}
             {{ form.title(class="h-auto w-64 rounded-xl shadow-xl") }}
+          {% endif %}
         </div>
   
-        <label class="text-lg text-white font-medium justify-self-start" for={{form.title.id}}>
+        <label class="text-lg text-white font-medium justify-self-start" for={{form.category.id}}>
           {{form.category.label}}
         </label>
         <div class="justify-self-end">
-          {{ form.category(class="rounded-xl shadow-xl") }}
+          {% if recipe %}
+            <select name="category" id="{{form.category.id}}" class="rounded-xl shadow-xl">
+              {% for choices in form.category.choices %}
+                {% if choices[0] == recipe.category_id %}
+                  <option value="{{choices[0]}}" selected>{{choices[1]}}</option>
+                {% else %}
+                  <option value="{{choices[0]}}">{{choices[1]}}</option>
+                {% endif %}
+              {% endfor %}
+            </select>
+            <!--{{ form.category(class="rounded-xl shadow-xl", value=recipe.category) }}-->
+          {% else %}
+            {{ form.category(class="rounded-xl shadow-xl") }}
+          {% endif %}
         </div>
   
         <label class="text-lg text-white font-medium justify-self-start" for={{form.title.id}}>
           {{form.description.label}}
         </label>
         <div class="justify-self-end">
-          {{ form.description(class="h-24 w-64 rounded-xl shadow-xl") }}
+          {% if recipe %}
+            <textarea placeholder="Descrição de sua receita" type="text" name="{{form.description.id}}" class="h-24 w-64 rounded-xl shadow-xl">{{recipe.description}}</textarea>
+          {% else %}
+            {{ form.description(class="h-auto w-64 rounded-xl shadow-xl") }}
+          {% endif %}
         </div>
   
         <label class="text-lg text-white font-medium justify-self-start" for={{form.title.id}}>
           {{form.ingredients.label}}
         </label>
         <div class="justify-self-end">
-          {{ form.ingredients(class="h-60 w-64 rounded-xl shadow-xl") }}
+          {% if recipe %}
+            <textarea type="text" name="{{form.ingredients.id}}" class="h-60 w-64 rounded-xl shadow-xl">{{recipe.ingredients}}</textarea>
+          {% else %}
+            {{ form.ingredients(class="h-60 w-64 rounded-xl shadow-xl") }}
+          {% endif %}
         </div>
   
         <label class="text-lg text-white font-medium justify-self-start" for={{form.title.id}}>
           {{form.preparation_steps.label}}
         </label>
         <div class="justify-self-end">
-          {{ form.preparation_steps(class="h-60 w-64 rounded-xl shadow-xl") }}
+          {% if recipe %}
+            <textarea type="text" name="{{form.preparation_steps.id}}" class="h-60 w-64 rounded-xl shadow-xl">{{recipe.preparation_steps}}</textarea>
+          {% else %}
+            {{ form.preparation_steps(class="h-60 w-64 rounded-xl shadow-xl") }}
+          {% endif %}
         </div>
   
         <label class="text-lg text-white font-medium justify-self-start" for={{form.title.id}}>
@@ -51,17 +80,15 @@
             <span id="selected-file-name" class="ml-2 mt-1 text-gray-400"></span>
           </div>
         </div>
-      <script>
-        function handleFileChange(event) {
-          const fileInput = event.target;
-          const fileNameElement = document.getElementById('selected-file-name');
-          fileNameElement.textContent = fileInput.files[0]?.name || '';
-        }
-      </script>
+        <script src="./../static/assets/src/inputField.js"></script>
         
       </div>
       <div class="flex justify-center w-full mt-4 pb-10">
+        {% if recipe %}
+          <input class="shadow-lg px-8 py-2 w-auto self-center no-hover text-white rounded-lg block font-medium tracking-wide text-center capitalize transition-colors duration-300 transform bg-purple-600 hover:bg-purple-500 focus:outline-none focus:ring focus:ring-teal-300 focus:ring-opacity-80" id="{{form.submit.id}}" name="submit" type="submit" value="Atualizar">
+        {% else %}
           {{form.submit(class='shadow-lg px-8 py-2 w-auto self-center no-hover text-white rounded-lg block font-medium tracking-wide text-center capitalize transition-colors duration-300 transform bg-purple-600 hover:bg-purple-500 focus:outline-none focus:ring focus:ring-teal-300 focus:ring-opacity-80')}}
+        {% endif %}
       </div>
       </div>
     </form>

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, flash, request, abort, jsonify  # noqa: F401, E501
+from flask import Flask, get_flashed_messages, render_template, redirect, url_for, flash, request, abort, jsonify  # noqa: F401, E501
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user, UserMixin  # noqa: F401, E501
 from flask_bcrypt import Bcrypt
 from flask_migrate import Migrate
@@ -85,18 +85,6 @@ class Recipe(db.Model):
     image_path = db.Column(String, nullable=True)
 
 
-"""
-    def save_image(self, image):
-        print("Imagem sendo salva")
-        now = datetime.now()
-        folder = f"assets/recipes_images/{now.year}/{now.strftime('%m')}"
-        filename = photos.save(image, folder=folder)
-        self.image_filename = filename
-        self.image_path = photos.path(filename)
-        session.commit()
-"""
-
-
 @login_manager.user_loader
 def load_user(user_id):
     return session.get(User, user_id)
@@ -174,18 +162,6 @@ class RecipeForm(FlaskForm):
                                description="Coloque sua imagem da receita")
     submit = SubmitField('Cadastrar')
 
-    def __init__(self, initial_data=None, *args, **kwargs):
-        super(RecipeForm, self).__init__(*args, **kwargs)
-        if initial_data:
-            self.populate_fields(initial_data)
-
-    def populate_fields(self, data):
-        self.title.data = data.get('title', '')
-        self.category.data = data.get('category', '')
-        self.description.data = data.get('description', '')
-        self.ingredients.data = data.get('ingredients', '')
-        self.preparation_steps.data = data.get('preparation_steps', '')
-
 
 """
 session.delete_all()
@@ -240,6 +216,7 @@ def login():
     # TODO: try except
     if current_user.is_authenticated:
         flash('Você já está logado.', 'error')
+        return redirect(url_for('home'))
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
@@ -270,8 +247,6 @@ def register_new_recipe():
                                  for category in categories]
 
         if form.validate_on_submit():
-            print(form.title.data)
-            print(form.category.data)
             now = datetime.now()
             path_image = f"{now.year}/{now.strftime('%m')}"
             try:
@@ -292,7 +267,7 @@ def register_new_recipe():
             try:
                 session.add(recipe)
                 session.commit()
-                flash("Receita cadastrada com sucesso!", "success")
+                flash("Receita cadastrada com sucesso!", category="success")
                 return redirect(url_for("home"))
             except SQLAlchemyError:
                 flash("Ocorreu um erro para cadastrar receita.", "error")
@@ -301,10 +276,11 @@ def register_new_recipe():
 
     else:
         # Usuário não logado
-        flash("Você precisa estar logado para acessar essa página.", "error")
+        flash("Você precisa estar logado para acessar essa página.",
+              category="error")
         return redirect(url_for('login'))
 
-    return render_template("new_recipe.html", form=form)
+    return render_template("new_recipe.html", form=form, recipe=None)
 
 
 @app.route('/my_recipes')
@@ -328,15 +304,8 @@ def edit_recipe(recipe_id):
     if recipe is None:
         abort(404)
 
-    data = {
-        'title': recipe.title,
-        'category': recipe.category,
-        'description': recipe.description,
-        'ingredients': recipe.ingredients,
-        'preparation_steps': recipe.preparation_steps,
-        'image_filename': recipe.image_filename
-    }
-    form = RecipeForm(initial_data=data)
+    form = RecipeForm()
+
     categories = session.query(Category).order_by(
         Category.name.asc()).all()
 
@@ -344,24 +313,35 @@ def edit_recipe(recipe_id):
     # como primeira a categoria selecionada.
     form.category.choices = [(category.id, category.name)
                              for category in categories]
-
     if form.validate_on_submit():
+        now = datetime.now()
+        path_image = f"{now.year}/{now.strftime('%m')}"
+        try:
+            image_file = request.files['image_filename']
+            filename = photos.save(
+                image_file, folder=path_image)
+            file_url = photos.url(filename)
+        except UploadNotAllowed:
+            flash("Ocorreu um erro para o salvamento da imagem.", "error")
+            return redirect(url_for("home"))
         recipe.title = form.title.data
         recipe.category_id = form.category.data
         recipe.description = form.description.data
         recipe.ingredients = form.ingredients.data
         recipe.preparation_steps = form.preparation_steps.data
         recipe.image_filename = form.image_filename.data.filename
+        recipe.image_path = file_url
+
         try:
             session.commit()
-            flash("Receita atualizada com sucesso!", "message")
+            flash("Receita atualizada com sucesso!", "success")
             return redirect(url_for("home"))
         except SQLAlchemyError:
             flash("Ocorreu um erro para atualizar receita.", "error")
             session.rollback()
             return redirect(url_for("home"))
 
-    return render_template("edit_recipe.html", form=form, recipe=recipe)
+    return render_template("new_recipe.html", form=form, recipe=recipe)
 
 
 @app.route('/delete_recipe/<recipe_id>')

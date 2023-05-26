@@ -5,12 +5,32 @@
 <!-- This is an example component -->
 <div class='min-h-screen from-background_primary to-background_secondary bg-gradient-to-br w-11/12 py-1 mt-1'>
   <div class="bg-sky-700 h-15 flex flex-row justify-center gap-6 w-full">
-    {% for category in categories %}
-  
+    {% if request.path == '/' %}
+      <a href="{{url_for('home')}}" class="my-3 mx-5 text-2xl text-white font-bold">Todas</a>
+    {% endif %}
+      {% for category in categories %}
+      
       <a href="{{url_for('category', category_id=category.id)}}" class="my-3 mx-5 text-2xl text-white font-bold">{{category.name}}</a>
     
     {% endfor %}
   </div>
+
+  {% with messages = get_flashed_messages(with_categories=True) %}
+  {% if messages %}
+      {% for category_message, message in messages %}
+          {% if category_message == 'error' %}
+          <div class="flex flex-row gap-1 justify-start p-4 mb-3 text-base text-red-800 rounded-lg bg-red-300 dark:bg-gray-800 dark:text-red-400 w-96 mx-auto mt-3" role="alert">
+              <span class="font-medium">Alerta!</span>  {{ message }}
+          </div>
+          {% elif category_message == 'success' %}
+          <div class="flex flex-row gap-1 justify-start p-4 mb-3 text-base text-green-800 rounded-lg bg-green-300 dark:bg-gray-800 dark:text-green-400 w-96 mx-auto mt-3" role="alert">
+              <span class="font-medium">Sucesso!</span>  {{ message }}
+          </div>
+          {% endif %}
+      {% endfor %}
+  {% endif %}
+{% endwith %}
+
 
   <div class='flex flex-wrap gap-6 justify-center pt-6 mb-5'>
     {% if not recipes and request.path == '/my_recipes' %}
@@ -31,20 +51,14 @@
           <p class='font-bold text-white text-[22px] leading-7 mb-0'>{{recipe.title}}</p>
           
           <p class='text-white font-[15px] mt-0'>{{recipe.description}}</p>
+          {% if not request.path == '/my_recipes' %}
           <a  href='{{ url_for("recipe_details", recipe_id=recipe.id) }}' class='no-hover mb-4 text-white rounded-lg block mt-10 w-full px-4 py-3 font-medium tracking-wide text-center capitalize transition-colors duration-300 transform bg-middle_color hover:bg-text_secondary focus:outline-none focus:ring focus:ring-teal-300 focus:ring-opacity-80'>
-
-<!--
-class="flex w-60 justify-center rounded-md bg-purple-600 hover:bg-purple-500 text-lg font-semibold 
-                text-white  shadow-sm focus-visible:outline 
-                focus-visible:outline-2 focus-visible:outline-offset-2 px-5 py-1 border-white"
-  -->
-
-
-
-
             Ver Receita
           </a>
-          {% if request.path == '/my_recipes' %}
+          {% elif request.path == '/my_recipes' %}
+            <a  href='{{ url_for("edit_recipe", recipe_id=recipe.id) }}' class='no-hover mb-4 text-white rounded-lg block mt-10 w-full px-4 py-3 font-medium tracking-wide text-center capitalize transition-colors duration-300 transform bg-middle_color hover:bg-text_secondary focus:outline-none focus:ring focus:ring-teal-300 focus:ring-opacity-80'>
+              Editar Receita
+            </a>
             <a  href='{{ url_for("delete_recipe", recipe_id=recipe.id) }}' class='no-hover mb-4 text-white rounded-lg block mt-0 w-full px-4 py-3 font-medium tracking-wide text-center capitalize transition-colors duration-300 transform bg-red-600 hover:bg-red-200 focus:outline-none focus:ring focus:ring-teal-300 focus:ring-opacity-80'>
               Excluir Receita
             </a>
