@@ -22,7 +22,16 @@
             
             
             <div class="mb-6">
-                <label for="{{ form.username.id }}" class="font-sans block text-base font-medium leading-6 text-white">{{ form.username.label.text }}</label>
+                <div class="flex items-center justify-between">
+                    <label for="{{ form.username.id }}" class="font-medium block text-base font-sans leading-6 text-white">{{form.username.label.text}}</label>
+                    <div class="text-sm">
+                        {% if form.username.errors %}
+                            <span class="font-semibold text-red-500 hover:text-red-400 text-">
+                                {{ form.username.errors[0] }}
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
                 <div class="mt-2">
                     {{form.username(class="placeholder:text-sm block w-full font-semibold rounded-md border-0 py-1.5 
                     text-sky-950 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6")}} 
@@ -30,13 +39,15 @@
             </div>
 
             <div class="mb-3">
-                <label for="{{ form.password.id }}" class="font-bold block text-base font-sans leading-6 text-white">{{form.password.label.text}}</label>
-                <div class="text-sm">
-                    {% if form.password.errors %}
-                        <span class="font-semibold text-red-500 hover:text-red-400 text-">
-                            {{ form.password.errors[0] }}
-                        </span>
-                    {% endif %}
+                <div class="flex items-center justify-between">
+                    <label for="{{ form.password.id }}" class="font-medium block text-base font-sans leading-6 text-white">{{form.password.label.text}}</label>
+                    <div class="text-sm">
+                        {% if form.password.errors %}
+                            <span class="font-semibold text-red-500 hover:text-red-400 text-">
+                                {{ form.password.errors[0] }}
+                            </span>
+                        {% endif %}
+                    </div>
                 </div>
                 <div class="mt-2">
                     {{form.password(class="peer placeholder:text-sm block w-full font-semibold rounded-md border-0 py-1.5 
@@ -47,13 +58,15 @@
             </div>
             
             <div class="mb-6">
-                <label for="{{ form.repeat_password.id }}" class="block text-base font-medium text-white">{{form.repeat_password.label.text}}</label>
-                <div class="">
-                    {% if form.repeat_password.errors %}
-                        <span class="text-sm font-semibold text-red-500 hover:text-red-400">
-                            {{ form.repeat_password.errors[0] }}
-                        </span>
-                    {% endif %}
+                <div class="flex items-center justify-between">
+                    <label for="{{ form.repeat_password.id }}" class="block text-base font-medium text-white">{{form.repeat_password.label.text}}</label>
+                    <div class="">
+                        {% if form.repeat_password.errors %}
+                            <span class="text-sm font-semibold text-red-500 hover:text-red-400">
+                                {{ form.repeat_password.errors[0] }}
+                            </span>
+                        {% endif %}
+                    </div>
                 </div>
                 <div class="mt-2">
                     {{form.repeat_password(class="placeholder:text-sm block w-full font-semibold rounded-md border-0 py-1.5 
@@ -71,17 +84,3 @@
 </div>
 </body>
 </html>
-
-<!--
-<form method="POST" action="">
-    {{ form.hidden_tag() }}
-    {{ form.name }}
-    {{ form.username }}
-    {{ form.password }}
-    {{ form.repeat_password}}
-    {% if form.repeat_password.errors %}
-        {{ form.repeat_password.errors[0](class="text-danger") }}
-    {% endif %}
-    {{ form.submit }}
-</form>
--->

@@ -5,7 +5,7 @@
 <!-- This is an example component -->
 <div class='min-h-screen from-background_primary to-background_secondary bg-gradient-to-br w-11/12 py-1 mt-1'>
   <div class="bg-sky-700 h-15 flex flex-row justify-center gap-6 w-full">
-    {% if request.path == '/' %}
+    {% if not request.path == '/my_recipes' %}
       <a href="{{url_for('home')}}" class="my-3 mx-5 text-2xl text-white font-bold">Todas</a>
     {% endif %}
       {% for category in categories %}

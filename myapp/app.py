@@ -199,7 +199,7 @@ def edit_recipe(recipe_id):
         try:
             session.commit()
             flash("Receita atualizada com sucesso!", "success")
-            return redirect(url_for("home"))
+            return redirect(url_for("my_recipes"))
         except SQLAlchemyError:
             flash("Ocorreu um erro para atualizar receita.", "error")
             session.rollback()

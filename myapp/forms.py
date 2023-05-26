@@ -46,7 +46,7 @@ class RegisterForm(FlaskForm):
                                     validators=[InputRequired(), Length(
                                         min=8, max=20)],
                                     render_kw={"placeholder": "Repita sua senha"})  # noqa: E501
-    name = StringField(label="Nome", validators=[InputRequired(), Length(
+    name = StringField(label="Nome Completo", validators=[InputRequired(), Length(  # noqa: E501
         min=8, max=255)], render_kw={"placeholder": "Nome Completo"})
     submit = SubmitField('Register')
 
@@ -56,7 +56,7 @@ class RegisterForm(FlaskForm):
             username=username.data).first()
         if existing_user_username:
             raise ValidationError(
-                'Nome de usuário já existe. Favor escolher um nome diferente.')
+                'Usuário já existe.')
 
     def validate_repeat_password(self, repeat_password):
         if repeat_password.data != self.password.data:
