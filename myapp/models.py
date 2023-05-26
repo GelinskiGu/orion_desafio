@@ -1,6 +1,6 @@
 from sqlalchemy import LargeBinary, Integer, String, ForeignKey, DateTime, func, Column  # noqa: F401, E501
 from flask_login import UserMixin  # noqa: F401, E501
-from extensions import db
+from .extensions import db
 
 
 class User(UserMixin, db.Model):

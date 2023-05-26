@@ -2,9 +2,9 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, TextAreaField, FileField, SelectField  # noqa: F401, E501
 from wtforms.validators import InputRequired, Length, ValidationError, EqualTo  # noqa: F401, E501
 
-from extensions import bcrypt
+from .extensions import bcrypt
 
-from models import User
+from .models import User
 
 # Formulário de login
 
