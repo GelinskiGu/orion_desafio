@@ -21,8 +21,8 @@ def create_app():
     path = './static/assets/recipes_images'
 
     # Configuracao banco de dados
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:8rPTT7k#gT@localhost/orion'  # noqa: E501
-    app.config['SECRET_KEY'] = 'qTUL^P3cQ%'
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")  # noqa: E501
+    app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
     app.config['UPLOADED_PHOTOS_DEST'] = os.path.join(
         basedir, path)
 
