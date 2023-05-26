@@ -7,6 +7,8 @@ from flask_uploads import UploadSet, configure_uploads, IMAGES, patch_request_cl
 from datetime import datetime  # noqa: F401, E501
 import os
 from sqlalchemy.exc import SQLAlchemyError, InvalidRequestError, OperationalError  # noqa: F401, E501
+from werkzeug.utils import secure_filename
+from werkzeug.datastructures import FileStorage
 from .config import SQLALCHEMY_DATABASE_URI, SECRET_KEY  # noqa: F401, E501
 from .extensions import db, bcrypt
 from .models import User, Category, Recipe
