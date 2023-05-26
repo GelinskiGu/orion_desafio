@@ -9,7 +9,6 @@ import os
 from sqlalchemy.exc import SQLAlchemyError, InvalidRequestError, OperationalError  # noqa: F401, E501
 from werkzeug.utils import secure_filename  # noqa: F401
 from werkzeug.datastructures import FileStorage  # noqa: F401
-from .config import SQLALCHEMY_DATABASE_URI, SECRET_KEY  # noqa: F401, E501
 from .extensions import db, bcrypt
 from .models import User, Category, Recipe
 from .forms import LoginForm, RegisterForm, RecipeForm  # noqa: F401, E501
@@ -22,8 +21,8 @@ def create_app():
     path = './static/assets/recipes_images'
 
     # Configuracao banco de dados
-    app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI  # noqa: E501
-    app.config['SECRET_KEY'] = SECRET_KEY
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:8rPTT7k#gT@localhost/orion'  # noqa: E501
+    app.config['SECRET_KEY'] = 'qTUL^P3cQ%'
     app.config['UPLOADED_PHOTOS_DEST'] = os.path.join(
         basedir, path)
 
