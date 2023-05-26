@@ -1,18 +1,16 @@
 from flask import Flask, get_flashed_messages, render_template, redirect, url_for, flash, request, abort, jsonify  # noqa: F401, E501
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user, UserMixin  # noqa: F401, E501
-from flask_bcrypt import Bcrypt
 from flask_migrate import Migrate
-from wtforms import StringField, PasswordField, SubmitField, TextAreaField, FileField, SelectField  # noqa: F401, E501
-from wtforms.validators import InputRequired, Length, ValidationError, EqualTo  # noqa: F401, E501
-from flask_wtf import FlaskForm
-from sqlalchemy import create_engine, LargeBinary, Integer, String, ForeignKey, DateTime, func, Column  # noqa: F401, E501
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from flask_sqlalchemy import SQLAlchemy
 from flask_uploads import UploadSet, configure_uploads, IMAGES, patch_request_class, UploadNotAllowed  # noqa: F401, E501
 from datetime import datetime  # noqa: F401, E501
 import os
 from sqlalchemy.exc import SQLAlchemyError, InvalidRequestError, OperationalError  # noqa: F401, E501
-from config import SQLALCHEMY_DATABASE_URI, SECRET_KEY
+from config import SQLALCHEMY_DATABASE_URI, SECRET_KEY  # noqa: F401, E501
+from extensions import db, bcrypt
+from models import User, Category, Recipe
+from forms import LoginForm, RegisterForm, RecipeForm  # noqa: F401, E501
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 path = './static/assets/recipes_images'
@@ -24,27 +22,23 @@ app.config['SECRET_KEY'] = SECRET_KEY
 app.config['UPLOADED_PHOTOS_DEST'] = os.path.join(
     basedir, path)
 
-bcrypt = Bcrypt(app)
-
+# bcrypt = Bcrypt(app)
 engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
 
 Session = sessionmaker(bind=engine)
 session = Session()
-
-db = SQLAlchemy(app, session_options={"autocommit": False})  # noqa: F811
+db.init_app(app)  # noqa: F811
 
 migrate = Migrate(app, db)
-
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
-
 
 photos = UploadSet('photos', IMAGES)
 configure_uploads(app, photos)
 patch_request_class(app)  # set maximum file size, default is 16MB
 
-
+"""
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
 
@@ -83,6 +77,7 @@ class Recipe(db.Model):
     created_at = db.Column(DateTime, nullable=False, default=func.now())
     image_filename = db.Column(String, nullable=True)
     image_path = db.Column(String, nullable=True)
+"""
 
 
 @login_manager.user_loader
@@ -90,6 +85,7 @@ def load_user(user_id):
     return session.get(User, user_id)
 
 
+"""
 # Formulário de cadastro
 class RegisterForm(FlaskForm):
     # Validações para o form de cadastro
@@ -163,7 +159,6 @@ class RecipeForm(FlaskForm):
     submit = SubmitField('Cadastrar')
 
 
-"""
 session.delete_all()
 
 categories = [
@@ -176,7 +171,8 @@ categories = [
 ]
 session.add_all(categories)
 session.commit()
-"""
+
+ """
 
 
 @app.route("/")
