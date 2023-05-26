@@ -3,12 +3,12 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 from flask_migrate import Migrate
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from flask_uploads import UploadSet, configure_uploads, IMAGES, patch_request_class, UploadNotAllowed  # noqa: F401, E501
+from flask_uploads import UploadSet, configure_uploads, IMAGES, UploadNotAllowed  # noqa: F401, E501
 from datetime import datetime  # noqa: F401, E501
 import os
 from sqlalchemy.exc import SQLAlchemyError, InvalidRequestError, OperationalError  # noqa: F401, E501
-from werkzeug.utils import secure_filename
-from werkzeug.datastructures import FileStorage
+from werkzeug.utils import secure_filename  # noqa: F401
+from werkzeug.datastructures import FileStorage  # noqa: F401
 from .config import SQLALCHEMY_DATABASE_URI, SECRET_KEY  # noqa: F401, E501
 from .extensions import db, bcrypt
 from .models import User, Category, Recipe
@@ -40,7 +40,6 @@ def create_app():
 
     photos = UploadSet('photos', IMAGES)
     configure_uploads(app, photos)
-    patch_request_class(app)  # set maximum file size, default is 16MB
 
     @login_manager.user_loader
     def load_user(user_id):
