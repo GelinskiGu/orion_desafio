@@ -133,7 +133,7 @@ def create_app():
                 try:
                     session.add(recipe)
                     session.commit()
-                    flash("Receita cadastrada com sucesso!", category="success")  # noqa: E501
+                    flash("Receita cadastrada!", category="success")  # noqa: E501
                     return redirect(url_for("home"))
                 except SQLAlchemyError:
                     flash("Ocorreu um erro para cadastrar receita.", "error")
@@ -197,7 +197,7 @@ def create_app():
 
             try:
                 session.commit()
-                flash("Receita atualizada com sucesso!", "success")
+                flash("Receita atualizada!", "success")
                 return redirect(url_for("my_recipes"))
             except SQLAlchemyError:
                 flash("Ocorreu um erro para atualizar receita.", "error")
@@ -217,7 +217,7 @@ def create_app():
             try:
                 session.delete(recipe)
                 session.commit()
-                flash("Receita deletada com sucesso!", "success")
+                flash("Receita deletada!", "success")
                 return redirect(url_for("home"))
             except InvalidRequestError as e:
                 print("Erro de solicitação inválida:", str(e))
