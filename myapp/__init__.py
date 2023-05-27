@@ -119,11 +119,6 @@ def create_app():
                 try:
                     filename = photos.save(
                         form.image_filename.data, folder=path_image)
-                    print(filename)
-                    print(form.image_filename.data.filename)
-                    # file_url = photos.url(filename)
-                    print("Chegou aki")
-                    # print(file_url)
                 except UploadNotAllowed:
                     flash("Ocorreu um erro para o salvamento da imagem.", "error")  # noqa: E501
                     return redirect(url_for("register_new_recipe"))
