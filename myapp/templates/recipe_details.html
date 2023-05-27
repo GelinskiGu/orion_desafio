@@ -44,7 +44,9 @@
                     <h1 class="m-3 font-bold text-2xl">Ingredientes</h1>
                     <ul class="list-disc">
                         {% for ingredient in ingredients %}
-                        <li>{{ingredient}}</li>
+                            {% if ingredient %}
+                                <li>{{ingredient}}</li>
+                            {% endif %}
                         {% endfor %}
                     </ul>  
                     </div>
