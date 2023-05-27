@@ -5,7 +5,7 @@
     <div class='min-h-screen bg-background_secondary py-3 mt-1 pt-4'>
         <div class="flex flex-row-reverse w-full px-5 h-full max-h-screen justify-center">
             <div class="flex items-center w-1/2 justify-start h-fit">
-                <img class="object-contain self-center w-auto m-auto opacity-95 rounded-xl  shadow-xl" src="{{recipe.image_path}}" alt="Imagem da receita">
+                <img class="object-contain self-center w-auto m-auto opacity-95 rounded-xl  shadow-xl" src="{{ url_for('static', filename=recipe.image_path.split('photos/')[1]) }}" alt="Imagem da receita">
             </div>
             
             <div class="h-screen bg-middle_color border-middle_color mr-2">

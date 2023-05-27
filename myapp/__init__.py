@@ -44,7 +44,7 @@ def create_app():
     photos = UploadSet('photos', IMAGES)
     configure_uploads(app, (photos,))
 
-    app.config['UPLOADED_PHOTOS_URL'] = 'http://127.0.0.1:5000/_uploads/photos'
+    app.config['UPLOADED_PHOTOS_URL'] = 'https://orion-receitas.onrender.com/_uploads/photos'  # noqa: E501
 
     @login_manager.user_loader
     def load_user(user_id):
@@ -184,7 +184,6 @@ def create_app():
                 image_file = request.files['image_filename']
                 filename = photos.save(
                     image_file, folder=path_image)
-                file_url = photos.url(filename)
             except UploadNotAllowed:
                 flash("Ocorreu um erro para o salvamento da imagem.", "error")
                 return redirect(url_for("home"))
@@ -194,7 +193,7 @@ def create_app():
             recipe.ingredients = form.ingredients.data
             recipe.preparation_steps = form.preparation_steps.data
             recipe.image_filename = form.image_filename.data.filename
-            recipe.image_path = file_url
+            recipe.image_path = "https://orion-receitas.onrender.com/_uploads/photos/" + filename  # noqa: E501
 
             try:
                 session.commit()
