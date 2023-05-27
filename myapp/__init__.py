@@ -12,7 +12,7 @@ from werkzeug.datastructures import FileStorage  # noqa: F401
 from .extensions import db, bcrypt
 from .models import User, Category, Recipe
 from .forms import CategoryForm, LoginForm, RegisterForm, RecipeForm  # noqa: F401, E501
-from .config import SQLALCHEMY_DATABASE_URI, SECRET_KEY  # noqa: F401, E501
+# from .config import SQLALCHEMY_DATABASE_URI, SECRET_KEY  # noqa: F401, E501
 
 
 def create_app():
@@ -22,10 +22,10 @@ def create_app():
     path = './static/assets/recipes_images'
 
     # Configuracao banco de dados
-    app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI  # noqa: E501
-    app.config['SECRET_KEY'] = SECRET_KEY
-    # app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")  # noqa: E501
-    # app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
+    # app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI  # noqa: E501
+    # app.config['SECRET_KEY'] = SECRET_KEY
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")  # noqa: E501
+    app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
     app.config['UPLOADED_PHOTOS_DEST'] = os.path.join(
         basedir, path)
     app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
