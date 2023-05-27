@@ -12,6 +12,7 @@ from werkzeug.datastructures import FileStorage  # noqa: F401
 from .extensions import db, bcrypt
 from .models import User, Category, Recipe
 from .forms import CategoryForm, LoginForm, RegisterForm, RecipeForm  # noqa: F401, E501
+from .config import SQLALCHEMY_DATABASE_URI, SECRET_KEY  # noqa: F401, E501
 
 
 def create_app():
@@ -21,10 +22,13 @@ def create_app():
     path = './static/assets/recipes_images'
 
     # Configuracao banco de dados
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")  # noqa: E501
-    app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
+    app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI  # noqa: E501
+    app.config['SECRET_KEY'] = SECRET_KEY
+    # app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")  # noqa: E501
+    # app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
     app.config['UPLOADED_PHOTOS_DEST'] = os.path.join(
         basedir, path)
+    app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
     engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
 
@@ -38,7 +42,9 @@ def create_app():
     login_manager.login_view = 'login'
 
     photos = UploadSet('photos', IMAGES)
-    configure_uploads(app, photos)
+    configure_uploads(app, (photos,))
+
+    app.config['UPLOADED_PHOTOS_URL'] = 'http://127.0.0.1:5000/_uploads/photos'
 
     @login_manager.user_loader
     def load_user(user_id):
@@ -109,11 +115,15 @@ def create_app():
 
             if form.validate_on_submit():
                 now = datetime.now()
-                path_image = f"{now.year}/{now.strftime('%m')}"
+                path_image = f"{now.year}/{now.strftime('%m')}"  # noqa: E501
                 try:
                     filename = photos.save(
                         form.image_filename.data, folder=path_image)
-                    file_url = photos.url(filename)
+                    print(filename)
+                    print(form.image_filename.data.filename)
+                    # file_url = photos.url(filename)
+                    print("Chegou aki")
+                    # print(file_url)
                 except UploadNotAllowed:
                     flash("Ocorreu um erro para o salvamento da imagem.", "error")  # noqa: E501
                     return redirect(url_for("register_new_recipe"))
@@ -124,7 +134,7 @@ def create_app():
                                 ingredients=form.ingredients.data,
                                 preparation_steps=form.preparation_steps.data,
                                 image_filename=form.image_filename.data.filename,  # noqa: E501
-                                image_path=file_url)  # noqa: E501
+                                image_path="https://orion-receitas.onrender.com/_uploads/photos/" + filename)  # noqa: E501
                 try:
                     session.add(recipe)
                     session.commit()
@@ -248,6 +258,7 @@ def create_app():
             abort(404)
         return render_template("home.html", recipes=recipes, categories=categories)  # noqa: E501
 
+    """
     @app.route('/register_category')
     def register_category():
         form = CategoryForm()
@@ -270,4 +281,5 @@ def create_app():
             return redirect(url_for('home'))
 
         return render_template("register_category.html", form=form)
+        """
     return app
