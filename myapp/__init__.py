@@ -264,6 +264,10 @@ def create_app():
                     flash("Ocorreu um erro para cadastrar receita.", "error")
                     session.rollback()
                     return redirect(url_for("register_new_recipe"))
+        else:
+            flash("Você não é permitido entrar nessa página.",
+                  category="error")
+            return redirect(url_for('home'))
 
         return render_template("register_category.html", form=form)
     return app
