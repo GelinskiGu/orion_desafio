@@ -6,6 +6,10 @@
 * [Acesso ao Projeto](#acesso-ao-projeto)
 
 # 📁 Acesso ao projeto
+O deploy do repositório está disponível em: **https://www.recipes-blog.gelinski.dev/**.
+
+Caso queira rodar localmente:
+
 <p>
   Inicialmente precisa ter o Python instalado.
   Após isso, é necessário a criação de um ambiente virtual. No diretório onde você clonou o projeto do github executar o seguinte comando:
@@ -29,12 +33,28 @@
   ```
   pip install -r requirements.txt
   ```
-<p>
-  Após executar essas etapas, apenas falta instalar o Tailwind, framework do CSS utilizado para fazer o frontend do projeto. Para fazer isso, basta executar:
-</p>
+  
+  Para fazer a configuração do banco de dados, no diretório myapp/ é necessário criar um arquivo **config.py**. Nesse arquivo é necessário o seguinte código:
 
   ```
-  npx tailwindcss -i static/assets/css/style.css -o static/css/output.css
+  SQLALCHEMY_DATABASE_URI = <Endereço de seu banco de dados>
+  SECRET_KEY = <Qualquer chave secreta>
+  ```
+
+  No arquivo __init__.py basta comentar e descomentar as seguintes linhas:
+
+  ```
+    from .config import SQLALCHEMY_DATABASE_URI, SECRET_KEY 
+
+    app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
+    app.config['SECRET_KEY'] = SECRET_KEY
+  # app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")
+  # app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
+  ```
+No arquivo run.py, no diretório principal basta incluir a seguinte linha de código no final do arquivo:
+ 
+  ```
+  app.run(debug=True)
   ```
 
 <p>
@@ -42,8 +62,8 @@
 </p>
 
    ```
-  py app.py
+  py run.py
   ```
 
-  Acesse o projeto no navegador usando a URL __http://localhost:5000__  , em que, por padrão, localhost é **127.0.0.1**
+  Acesse o projeto no navegador usando a URL __http://localhost:5000__  , em que, por padrão, localhost é **127.0.0.1**.
 
