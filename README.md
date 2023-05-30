@@ -35,7 +35,7 @@ O deploy do repositório está disponível em: **[https://www.recipes-blog.gelin
 1. Clone o repositório:
 
    ```bash
-   git clone https://github.com/GelinskiGu/orion_desafio.git
+   git clone https://github.com/GelinskiGu/recipe_blog.git
 
 2. Navegue até o diretório do projeto:
 
